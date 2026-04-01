@@ -4,6 +4,6 @@ TODO — smoke plume NO2 / PlanetScope + TEMPO
 
 2. Lock which TEMPO and PlanetScope data you use; set up the software environment.
 
-3. Build the pipeline: time match, smoke mask, overlap with TEMPO, VCD to molecules or mass.
+3. Build the pipeline: time match, smoke mask, overlap with TEMPO, background subtraction (define reference region/time), then excess VCD to molecules or mass.
 
 4. Sanity-check results; save maps and a small results table.
