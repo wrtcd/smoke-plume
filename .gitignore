@@ -6,3 +6,9 @@ __pycache__/
 *.nc
 *.tif
 *.tiff
+
+# Generated from PDFs (local preview only)
+pdf-pages/
+
+# Local browse thumbnails / large exports under data/
+data/**/thumb*.png

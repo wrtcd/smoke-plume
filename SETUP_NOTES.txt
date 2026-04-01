@@ -1,0 +1,22 @@
+Environment setup (no administrator rights)
+------------------------------------------
+
+1. Install Python 3.10+ for your user only (does not require admin):
+   - Download the Windows installer from https://www.python.org/downloads/
+   - Run it and choose "Install for current user" / uncheck "Install for all users"
+   - Enable "Add python.exe to PATH" if offered
+
+2. Open a new terminal and verify:
+   py -3.12 --version
+   (or python --version pointing to 3.10+)
+
+3. From the smoke-plume repo folder:
+   py -3.12 -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+
+If the silent installer was run without admin, Python may be under:
+%LOCALAPPDATA%\Programs\Python\Python312\python.exe
+
+Large rasters (*.tif, *.nc) and pdf-pages/ are gitignored; keep data local.

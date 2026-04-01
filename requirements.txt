@@ -1,0 +1,16 @@
+# Python >= 3.10 recommended (3.11+ ideal for raster stack wheels).
+# Create venv:  py -3 -m venv .venv
+# Activate (PowerShell):  .venv\Scripts\Activate.ps1
+# Install:  pip install -r requirements.txt
+
+numpy>=1.24,<3
+scipy>=1.11,<2
+xarray>=2024.1
+netCDF4>=1.6
+h5netcdf>=1.3
+rasterio>=1.3
+rioxarray>=0.15
+geopandas>=0.14
+shapely>=2.0
+pyproj>=3.6
+matplotlib>=3.8
