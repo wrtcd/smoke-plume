@@ -1,3 +1,4 @@
 {
-  "markdown.math.enabled": true
+  "markdown.math.enabled": true,
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe"
 }
