@@ -1,7 +1,7 @@
 """
 Palisades pilot pipeline (TODO 3): time-match metadata, Planet smoke mask,
 overlap fraction f_p on TEMPO grid, background subtraction, excess column,
-total NO2 mass.
+total NO2 mass (Step 5: see also scripts/column_to_mass.py on delta_vcd_plume.tif).
 
 Expects pilot rasters from PROJECT.md (local; *.tif is gitignored):
   - data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif
@@ -63,9 +63,12 @@ def smoke_mask_from_sr(
     return (ratio < blue_nir_max) & np.isfinite(blue) & np.isfinite(nir)
 
 
-def load_tempo_vcd(path: Path) -> tuple[np.ndarray, rasterio.DatasetReader]:
+def load_tempo_vcd(path: Path, band: int = 1) -> tuple[np.ndarray, rasterio.DatasetReader]:
     ds = rasterio.open(path)
-    arr = ds.read(1).astype(np.float64)
+    if band < 1 or band > ds.count:
+        ds.close()
+        raise ValueError(f"TEMPO raster has {ds.count} band(s); requested band {band}")
+    arr = ds.read(band).astype(np.float64)
     nodata = ds.nodata
     if nodata is not None:
         arr = np.where(arr == nodata, np.nan, arr)
@@ -116,6 +119,7 @@ def run(
     write_maps: bool,
     band_blue: int,
     band_nir: int,
+    tempo_vcd_band: int,
 ) -> dict:
     if not planet_path.is_file():
         raise FileNotFoundError(f"Missing Planet raster: {planet_path}")
@@ -124,7 +128,7 @@ def run(
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    vcd, tempo_ds = load_tempo_vcd(tempo_path)
+    vcd, tempo_ds = load_tempo_vcd(tempo_path, band=tempo_vcd_band)
     h, w = vcd.shape
 
     with rasterio.open(planet_path) as planet_ds:
@@ -169,6 +173,7 @@ def run(
             "blue_nir_max": blue_nir_max,
             "fp_background_max": fp_bg_max,
             "bands": {"blue": band_blue, "nir": band_nir},
+            "tempo_vcd_band": tempo_vcd_band,
         },
         "vcd_background_median": vcd_bg,
         "pixels_tempo": int(h * w),
@@ -200,10 +205,18 @@ def run(
     if write_maps:
         profile = tempo_ds.profile.copy()
         profile.update(dtype=rasterio.float32, count=1, compress="deflate")
+        nd = tempo_ds.nodata if tempo_ds.nodata is not None else -9999.0
         with rasterio.open(out_dir / "f_p.tif", "w", **profile) as dst:
             dst.write(f_p.astype(np.float32), 1)
+            dst.set_band_description(1, "f_p sub-pixel smoke fraction on TEMPO grid")
+        # Step 4: full-field excess column ΔVCD = VCD - VCD_bg (not yet scaled by f_p)
+        with rasterio.open(out_dir / "delta_vcd.tif", "w", **profile) as dst:
+            dst.write(np.where(np.isfinite(delta), delta, nd).astype(np.float32), 1)
+            dst.set_band_description(1, "delta VCD = VCD - VCD_bg (all valid TEMPO pixels)")
+        # Plume-attributed excess: f_p * ΔVCD
         with rasterio.open(out_dir / "delta_vcd_plume.tif", "w", **profile) as dst:
-            dst.write(np.where(np.isfinite(delta_plume), delta_plume, tempo_ds.nodata or -9999.0).astype(np.float32), 1)
+            dst.write(np.where(np.isfinite(delta_plume), delta_plume, nd).astype(np.float32), 1)
+            dst.set_band_description(1, "f_p * delta VCD (plume-weighted excess column)")
 
     tempo_ds.close()
     return summary
@@ -224,7 +237,17 @@ def main() -> None:
     p.add_argument("--fp-bg-max", type=float, default=0.02, help="Max f_p for background median.")
     p.add_argument("--blue-band", type=int, default=2, help="Planet SR band index for Blue (1-based).")
     p.add_argument("--nir-band", type=int, default=8, help="Planet SR band index for NIR (1-based).")
-    p.add_argument("--write-maps", action="store_true", help="Write f_p and delta_vcd_plume GeoTIFFs.")
+    p.add_argument(
+        "--tempo-vcd-band",
+        type=int,
+        default=1,
+        help="Band index in TEMPO GeoTIFF for tropospheric VCD (band 1 after tempo_l2_to_4326 --stack).",
+    )
+    p.add_argument(
+        "--write-maps",
+        action="store_true",
+        help="Write Step 4 GeoTIFFs: f_p.tif, delta_vcd.tif (VCD−VCD_bg), delta_vcd_plume.tif (f_p×ΔVCD).",
+    )
     args = p.parse_args()
 
     try:
@@ -238,6 +261,7 @@ def main() -> None:
             args.write_maps,
             args.blue_band,
             args.nir_band,
+            args.tempo_vcd_band,
         )
     except FileNotFoundError as e:
         print(str(e), file=sys.stderr)
@@ -250,6 +274,8 @@ def main() -> None:
 
     print(json.dumps(summary, indent=2))
     print(f"\nWrote {args.out / 'pipeline_summary.json'} and pipeline_table.csv")
+    if args.write_maps:
+        print(f"Also wrote maps: f_p.tif, delta_vcd.tif, delta_vcd_plume.tif under {args.out.resolve()}")
 
 
 if __name__ == "__main__":
