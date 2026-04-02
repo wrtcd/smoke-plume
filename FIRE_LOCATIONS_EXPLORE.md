@@ -33,12 +33,16 @@ Values are **approximate**; pad outward if your tool clips to the box edge.
 
 ### 1. Park Fire (2024)
 
+**Start date (approx.):** 2024-07-24
+
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
 | **NW** | 40.55 | 122.15 |
 | **SE** | 39.55 | 121.20 |
 
 ### 2. Gifford Fire (2025)
+
+**Start date (approx.):** 2025-08-01
 
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
@@ -47,12 +51,16 @@ Values are **approximate**; pad outward if your tool clips to the box edge.
 
 ### 3. Madre Fire (2025)
 
+**Start date (approx.):** 2025-07-02
+
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
 | **NW** | 35.25 | 120.25 |
 | **SE** | 34.85 | 119.45 |
 
 ### 4. Borel Fire (2024)
+
+**Start date (approx.):** 2024-07-24
 
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
@@ -61,12 +69,16 @@ Values are **approximate**; pad outward if your tool clips to the box edge.
 
 ### 5. Bridge Fire (2024)
 
+**Start date (approx.):** 2024-09-08
+
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
 | **NW** | 34.38 | 117.95 |
 | **SE** | 34.15 | 117.55 |
 
 ### 6. Line Fire (2024)
+
+**Start date (approx.):** 2024-09-05
 
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
@@ -75,12 +87,16 @@ Values are **approximate**; pad outward if your tool clips to the box edge.
 
 ### 7. Garnet Fire (2025)
 
+**Start date (approx.):** 2025-08-24
+
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
 | **NW** | 37.55 | 119.45 |
 | **SE** | 37.10 | 118.85 |
 
 ### 8. Palisades Fire (2025)
+
+**Start date (approx.):** 2025-01-07
 
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
@@ -89,12 +105,16 @@ Values are **approximate**; pad outward if your tool clips to the box edge.
 
 ### 9. Airport Fire (2024)
 
+**Start date (approx.):** 2024-09-09
+
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
 | **NW** | 33.78 | 117.62 |
 | **SE** | 33.62 | 117.42 |
 
 ### 10. Eaton Fire (2025)
+
+**Start date (approx.):** 2025-01-07
 
 | Corner | Latitude °N | Longitude °W |
 |--------|----------------|---------------|
@@ -107,18 +127,18 @@ Values are **approximate**; pad outward if your tool clips to the box edge.
 
 Many tools want **min latitude, max latitude, min longitude, max longitude** (all in °N and °W as positive west stored negative):
 
-| # | Incident | lat min (S) | lat max (N) | lon min (W, −) | lon max (E, −) |
-|---|----------|---------------|-------------|----------------|----------------|
-| 1 | Park | 39.55 | 40.55 | −122.15 | −121.20 |
-| 2 | Gifford | 34.75 | 35.55 | −120.55 | −119.65 |
-| 3 | Madre | 34.85 | 35.25 | −120.25 | −119.45 |
-| 4 | Borel | 35.35 | 35.85 | −118.95 | −118.25 |
-| 5 | Bridge | 34.15 | 34.38 | −117.95 | −117.55 |
-| 6 | Line | 34.08 | 34.32 | −117.35 | −117.05 |
-| 7 | Garnet | 37.10 | 37.55 | −119.45 | −118.85 |
-| 8 | Palisades | 34.00 | 34.14 | −118.78 | −118.45 |
-| 9 | Airport | 33.62 | 33.78 | −117.62 | −117.42 |
-| 10 | Eaton | 34.16 | 34.26 | −118.20 | −118.04 |
+| # | Incident | Start date (approx.) | lat min (S) | lat max (N) | lon min (W, −) | lon max (E, −) |
+|---|----------|----------------------|---------------|-------------|----------------|----------------|
+| 1 | Park | 2024-07-24 | 39.55 | 40.55 | −122.15 | −121.20 |
+| 2 | Gifford | 2025-08-01 | 34.75 | 35.55 | −120.55 | −119.65 |
+| 3 | Madre | 2025-07-02 | 34.85 | 35.25 | −120.25 | −119.45 |
+| 4 | Borel | 2024-07-24 | 35.35 | 35.85 | −118.95 | −118.25 |
+| 5 | Bridge | 2024-09-08 | 34.15 | 34.38 | −117.95 | −117.55 |
+| 6 | Line | 2024-09-05 | 34.08 | 34.32 | −117.35 | −117.05 |
+| 7 | Garnet | 2025-08-24 | 37.10 | 37.55 | −119.45 | −118.85 |
+| 8 | Palisades | 2025-01-07 | 34.00 | 34.14 | −118.78 | −118.45 |
+| 9 | Airport | 2024-09-09 | 33.62 | 33.78 | −117.62 | −117.42 |
+| 10 | Eaton | 2025-01-07 | 34.16 | 34.26 | −118.20 | −118.04 |
 
 ---
 
