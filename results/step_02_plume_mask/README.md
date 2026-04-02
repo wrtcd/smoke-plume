@@ -29,7 +29,11 @@ Parameter used in the pilot run:
 
 ### Generated outputs (option C: full + preview)
 
-Run from repo root:
+**QGIS-friendly names** (same mask math; default folder `results/qgis_planet_smoke/`):
+
+`python scripts/planet_smoke_mask_qgis.py`
+
+**Full Step 2 export** (ratio, mask, preview, `f_p`):
 
 `python scripts/export_planet_smoke_step2.py`
 

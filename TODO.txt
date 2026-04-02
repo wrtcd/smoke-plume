@@ -1,9 +1,0 @@
-TODO — smoke plume NO2 / PlanetScope + TEMPO
-
-1. [x] Get scanned methodology into PROJECT.md (exact steps and math). — Done; see PROJECT.md “Methodology (from scanned notes)”.
-
-2. [x] Lock which TEMPO and PlanetScope data you use; set up the software environment. — PROJECT.md “Locked data” + pilot rasters; `requirements.txt` for Python (venv + `pip install -r requirements.txt`).
-
-3. [x] Build the pipeline: time match, smoke mask, overlap with TEMPO, background subtraction (define reference region/time), then excess VCD to molecules or mass. — `scripts/palisades_pipeline.py` (run after placing pilot *.tif under `data/palisades/` per PROJECT.md).
-
-4. [x] Sanity-check results; save maps and a small results table. — `scripts/palisades_sanity_check.py` -> `results/palisades/sanity_table.csv`, `sanity_report.json`, `maps/*.png` (after `palisades_pipeline.py --write-maps`).

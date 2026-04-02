@@ -165,8 +165,8 @@ Apply plume overlap:
 
 ---
 
-Action items live in **TODO.txt** (same folder as this file).
+For setup commands and script index, see **README.md** in the repository root.
 
 ---
 
-*Last updated: pilot rasters + `requirements.txt`; locked Palisades data (TODO 2); methodology from `method.pdf` and `masscal.pdf`; formulas in plain/Unicode for reliable Markdown preview.*
+*Last updated: pilot rasters + `requirements.txt`; locked Palisades data; methodology from `method.pdf` and `masscal.pdf`; formulas in plain/Unicode for reliable Markdown preview.*

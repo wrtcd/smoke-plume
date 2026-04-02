@@ -30,6 +30,8 @@ DEFAULT_OUT_DIR = REPO_ROOT / "results/palisades"
 
 # Default: PlanetScope 8-band analytic SR (1-based): Blue=2, NIR=8 (see --blue-band / --nir-band)
 
+MASK_NODATA_OUT = -9999.0
+
 AVOGADRO = 6.022_140_76e23
 M_NO2_KG_PER_MOL = 46e-3
 
@@ -63,6 +65,101 @@ def smoke_mask_from_sr(
     return (ratio < blue_nir_max) & np.isfinite(blue) & np.isfinite(nir)
 
 
+def ndhi_green_blue(green: np.ndarray, blue: np.ndarray) -> np.ndarray:
+    """(Green - Blue) / (Green + Blue). Not the same as haze ND(B,NIR); see ndhi_blue_nir."""
+    denom = np.maximum(green + blue, 1e-8)
+    return (green - blue) / denom
+
+
+def ndhi_blue_nir(blue: np.ndarray, nir: np.ndarray) -> np.ndarray:
+    """Normalized difference (Blue - NIR) / (Blue + NIR). Often used as haze / path-radiance contrast."""
+    denom = np.maximum(blue + nir, 1e-8)
+    return (blue - nir) / denom
+
+
+def smoke_mask_ndhi_green_blue(
+    green: np.ndarray,
+    blue: np.ndarray,
+    ndhi_smoke_below: float,
+) -> np.ndarray:
+    """Smoke where green-blue NDHI < threshold (tune per scene)."""
+    ndhi = ndhi_green_blue(green, blue)
+    valid = np.isfinite(green) & np.isfinite(blue)
+    return (ndhi < ndhi_smoke_below) & valid
+
+
+def smoke_mask_ndhi_blue_nir(
+    blue: np.ndarray,
+    nir: np.ndarray,
+    smoke_above: float,
+) -> np.ndarray:
+    """
+    Smoke/haze where (B-NIR)/(B+NIR) is above threshold.
+    Clear vegetation is often strongly negative; haze/smoke can push the index toward 0 or positive.
+    """
+    idx = ndhi_blue_nir(blue, nir)
+    valid = np.isfinite(blue) & np.isfinite(nir)
+    return (idx > smoke_above) & valid
+
+
+def smoke_mask_to_float_raster(
+    valid: np.ndarray,
+    smoke: np.ndarray,
+    mask_nodata: float = MASK_NODATA_OUT,
+) -> np.ndarray:
+    """Valid clear=0, valid smoke=1, invalid=nodata (not 0 — so QGIS can separate from clear)."""
+    return np.where(valid, np.where(smoke, 1.0, 0.0), mask_nodata).astype(np.float32)
+
+
+def compute_smoke_mask_layers(
+    *,
+    method: str,
+    blue: np.ndarray,
+    nir: np.ndarray | None,
+    green: np.ndarray | None,
+    blue_nir_max: float,
+    ndhi_smoke_below: float,
+    ndhi_bnir_smoke_above: float = -0.15,
+    mask_nodata: float = MASK_NODATA_OUT,
+) -> tuple[np.ndarray, np.ndarray, str]:
+    """
+    Build float smoke mask (0 / 1 / nodata) and an index raster for tuning in QGIS.
+    Returns (mask_01, index_float32, index_label) where index is ratio or NDHI (nan invalid).
+    """
+    m = method.lower().strip()
+    if m in ("blue_nir", "blue-nir", "b_nir"):
+        if nir is None:
+            raise ValueError("blue_nir method requires nir array")
+        valid = np.isfinite(blue) & np.isfinite(nir)
+        smoke = smoke_mask_from_sr(blue, nir, blue_nir_max)
+        mask_01 = smoke_mask_to_float_raster(valid, smoke, mask_nodata)
+        denom = np.maximum(nir, 1e-8)
+        ratio = (blue / denom).astype(np.float32)
+        ratio[~valid] = np.nan
+        return mask_01, ratio, "blue_nir_ratio"
+    if m in ("ndhi", "ndhi_green_blue"):
+        if green is None:
+            raise ValueError("ndhi (green-blue) method requires green array")
+        valid = np.isfinite(green) & np.isfinite(blue)
+        smoke = smoke_mask_ndhi_green_blue(green, blue, ndhi_smoke_below)
+        mask_01 = smoke_mask_to_float_raster(valid, smoke, mask_nodata)
+        ndhi = ndhi_green_blue(green, blue).astype(np.float32)
+        ndhi[~valid] = np.nan
+        return mask_01, ndhi, "ndhi_green_blue"
+    if m in ("ndhi_bnir", "ndhi_b_nir", "haze_bnir"):
+        if nir is None:
+            raise ValueError("ndhi_bnir method requires nir array")
+        valid = np.isfinite(blue) & np.isfinite(nir)
+        smoke = smoke_mask_ndhi_blue_nir(blue, nir, ndhi_bnir_smoke_above)
+        mask_01 = smoke_mask_to_float_raster(valid, smoke, mask_nodata)
+        idx = ndhi_blue_nir(blue, nir).astype(np.float32)
+        idx[~valid] = np.nan
+        return mask_01, idx, "ndhi_bnir"
+    raise ValueError(
+        f"Unknown mask method: {method!r} (use blue_nir, ndhi / ndhi_green_blue, or ndhi_bnir)"
+    )
+
+
 def load_tempo_vcd(path: Path, band: int = 1) -> tuple[np.ndarray, rasterio.DatasetReader]:
     ds = rasterio.open(path)
     if band < 1 or band > ds.count:
@@ -77,18 +174,22 @@ def load_tempo_vcd(path: Path, band: int = 1) -> tuple[np.ndarray, rasterio.Data
 
 def reproject_mask_to_tempo(
     planet_ds: rasterio.DatasetReader,
-    mask: np.ndarray,
+    mask_01_or_nodata: np.ndarray,
     tempo_ds: rasterio.DatasetReader,
+    *,
+    src_nodata: float = MASK_NODATA_OUT,
 ) -> np.ndarray:
+    """Average sub-pixel smoke fraction; src pixels equal to src_nodata do not contribute."""
     dst = np.zeros((tempo_ds.height, tempo_ds.width), dtype=np.float32)
     reproject(
-        source=mask.astype(np.float32),
+        source=np.asarray(mask_01_or_nodata, dtype=np.float32),
         destination=dst,
         src_transform=planet_ds.transform,
         src_crs=planet_ds.crs,
         dst_transform=tempo_ds.transform,
         dst_crs=tempo_ds.crs,
         resampling=Resampling.average,
+        src_nodata=src_nodata,
     )
     return np.clip(dst, 0.0, 1.0)
 
@@ -120,6 +221,12 @@ def run(
     band_blue: int,
     band_nir: int,
     tempo_vcd_band: int,
+    *,
+    mask_method: str = "blue_nir",
+    band_green: int = 3,
+    ndhi_smoke_below: float = 0.0,
+    ndhi_bnir_smoke_above: float = -0.15,
+    mask_nodata: float = MASK_NODATA_OUT,
 ) -> dict:
     if not planet_path.is_file():
         raise FileNotFoundError(f"Missing Planet raster: {planet_path}")
@@ -132,17 +239,39 @@ def run(
     h, w = vcd.shape
 
     with rasterio.open(planet_path) as planet_ds:
-        if planet_ds.count < band_nir:
-            raise ValueError(f"Expected >= {band_nir} bands, got {planet_ds.count}")
+        need = max(band_blue, band_nir)
+        if mask_method.lower().strip() in ("ndhi", "ndhi_green_blue"):
+            need = max(need, band_green)
+        if planet_ds.count < need:
+            raise ValueError(f"Expected >= {need} bands, got {planet_ds.count}")
         blue = planet_ds.read(band_blue).astype(np.float64)
-        nir = planet_ds.read(band_nir).astype(np.float64)
         pnod = planet_ds.nodata
         if pnod is not None:
             blue = np.where(blue == pnod, np.nan, blue)
-            nir = np.where(nir == pnod, np.nan, nir)
+        nir_arr: np.ndarray | None = None
+        green_arr: np.ndarray | None = None
+        if mask_method.lower().strip() in ("ndhi", "ndhi_green_blue"):
+            green_arr = planet_ds.read(band_green).astype(np.float64)
+            if pnod is not None:
+                green_arr = np.where(green_arr == pnod, np.nan, green_arr)
+        else:
+            nir_arr = planet_ds.read(band_nir).astype(np.float64)
+            if pnod is not None:
+                nir_arr = np.where(nir_arr == pnod, np.nan, nir_arr)
 
-        mask = smoke_mask_from_sr(blue, nir, blue_nir_max)
-        f_p = reproject_mask_to_tempo(planet_ds, mask, tempo_ds)
+        mask_01, _idx, _label = compute_smoke_mask_layers(
+            method=mask_method,
+            blue=blue,
+            nir=nir_arr,
+            green=green_arr,
+            blue_nir_max=blue_nir_max,
+            ndhi_smoke_below=ndhi_smoke_below,
+            ndhi_bnir_smoke_above=ndhi_bnir_smoke_above,
+            mask_nodata=mask_nodata,
+        )
+        f_p = reproject_mask_to_tempo(
+            planet_ds, mask_01, tempo_ds, src_nodata=mask_nodata
+        )
 
     valid = np.isfinite(vcd) & (vcd > 0)
     bg_sel = valid & (f_p <= fp_bg_max)
@@ -170,9 +299,17 @@ def run(
         "inputs": {"planet": str(planet_path), "tempo": str(tempo_path)},
         "parameters": {
             "vcd_units": vcd_units,
+            "mask_method": mask_method,
+            "mask_nodata": mask_nodata,
             "blue_nir_max": blue_nir_max,
+            "ndhi_smoke_below": ndhi_smoke_below,
+            "ndhi_bnir_smoke_above": ndhi_bnir_smoke_above,
             "fp_background_max": fp_bg_max,
-            "bands": {"blue": band_blue, "nir": band_nir},
+            "bands": {
+                "blue": band_blue,
+                "nir": band_nir,
+                "green": band_green,
+            },
             "tempo_vcd_band": tempo_vcd_band,
         },
         "vcd_background_median": vcd_bg,
@@ -234,9 +371,42 @@ def main() -> None:
         help="TEMPO GeoTIFF vertical column units (NASA browse / GEE: molec_cm2).",
     )
     p.add_argument("--blue-nir-max", type=float, default=0.42, help="Smoke: blue/NIR below this (tune).")
+    p.add_argument(
+        "--mask-method",
+        choices=("blue_nir", "ndhi", "ndhi_bnir"),
+        default="blue_nir",
+        help=(
+            "blue_nir: B/NIR ratio; ndhi: (G-B)/(G+B), smoke if below --ndhi-smoke-below; "
+            "ndhi_bnir: (B-NIR)/(B+NIR) haze index, smoke if above --ndhi-bnir-smoke-above."
+        ),
+    )
+    p.add_argument(
+        "--ndhi-smoke-below",
+        type=float,
+        default=0.0,
+        help="ndhi (green-blue): smoke where index is below this (try -0.1 to 0.05).",
+    )
+    p.add_argument(
+        "--ndhi-bnir-smoke-above",
+        type=float,
+        default=-0.15,
+        help="ndhi_bnir: smoke/haze where (B-NIR)/(B+NIR) exceeds this (tune; try -0.4 to 0.0).",
+    )
+    p.add_argument(
+        "--mask-nodata",
+        type=float,
+        default=MASK_NODATA_OUT,
+        help="Value for invalid Planet pixels in mask warp (default -9999; clear=0, smoke=1).",
+    )
     p.add_argument("--fp-bg-max", type=float, default=0.02, help="Max f_p for background median.")
     p.add_argument("--blue-band", type=int, default=2, help="Planet SR band index for Blue (1-based).")
     p.add_argument("--nir-band", type=int, default=8, help="Planet SR band index for NIR (1-based).")
+    p.add_argument(
+        "--green-band",
+        type=int,
+        default=3,
+        help="Planet SR Green band (1-based); used when --mask-method ndhi.",
+    )
     p.add_argument(
         "--tempo-vcd-band",
         type=int,
@@ -246,7 +416,7 @@ def main() -> None:
     p.add_argument(
         "--write-maps",
         action="store_true",
-        help="Write Step 4 GeoTIFFs: f_p.tif, delta_vcd.tif (VCD−VCD_bg), delta_vcd_plume.tif (f_p×ΔVCD).",
+        help="Write Step 4 GeoTIFFs: f_p.tif, delta_vcd.tif (VCD-VCD_bg), delta_vcd_plume.tif (f_p*delta_VCD).",
     )
     args = p.parse_args()
 
@@ -262,6 +432,11 @@ def main() -> None:
             args.blue_band,
             args.nir_band,
             args.tempo_vcd_band,
+            mask_method=args.mask_method,
+            band_green=args.green_band,
+            ndhi_smoke_below=args.ndhi_smoke_below,
+            ndhi_bnir_smoke_above=args.ndhi_bnir_smoke_above,
+            mask_nodata=args.mask_nodata,
         )
     except FileNotFoundError as e:
         print(str(e), file=sys.stderr)
