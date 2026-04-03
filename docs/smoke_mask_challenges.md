@@ -74,6 +74,6 @@ Getting a **clean** mask often requires **iterating**: different **Planet acquis
 
 ## Related scripts
 
-- `scripts/palisades_pipeline.py` — `--mask-method`, `--ndhi-bnir-smoke-above`, `--mask-nodata`
+- `scripts/smoke_plume_pipeline.py` — `--mask-method`, `--ndhi-bnir-smoke-above`, `--mask-nodata`
 - `scripts/planet_smoke_mask_qgis.py` — QGIS-oriented exports (`ndhi_green_blue.tif`, `ndhi_bnir.tif`, etc.)
 - `scripts/export_planet_smoke_step2.py` — Step 2 checkpoint outputs

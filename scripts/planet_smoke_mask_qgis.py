@@ -25,7 +25,7 @@ import rasterio
 from rasterio.transform import Affine
 from rasterio.warp import Resampling, reproject
 
-from palisades_pipeline import (
+from smoke_plume_pipeline import (
     DEFAULT_PLANET,
     DEFAULT_TEMPO,
     MASK_NODATA_OUT,

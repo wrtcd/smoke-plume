@@ -1,0 +1,37 @@
+{
+  "type": "Feature",
+  "id": "park-fire-2024",
+  "properties": {
+    "name": "Park Fire",
+    "title": "Park Fire AOI",
+    "start_date": "2024-07-24",
+    "description": "Approximate search envelope; not official fire perimeter"
+  },
+  "geometry": {
+    "coordinates": [
+      [
+        [
+          -122.15,
+          39.55
+        ],
+        [
+          -121.2,
+          39.55
+        ],
+        [
+          -121.2,
+          40.55
+        ],
+        [
+          -122.15,
+          40.55
+        ],
+        [
+          -122.15,
+          39.55
+        ]
+      ]
+    ],
+    "type": "Polygon"
+  }
+}

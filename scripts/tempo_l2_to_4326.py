@@ -18,8 +18,8 @@ Python is more portable on Windows; tune --res. Optional --bbox clips to an AOI.
 Example:
 
   python scripts/tempo_l2_to_4326.py \\
-    --nc data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc \\
-    -o data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif \\
+    --nc smoke-plume-data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc \\
+    -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif \\
     --max-cloud 0.3 --stack --amf-plume-adjust --plume-height-agl-m 1000
 
 QA: by default, mask VCD where main_data_quality_flag != 0. Optional --no-qa, --ground-qa-zero.
@@ -43,7 +43,7 @@ except ModuleNotFoundError:  # pragma: no cover
         "Missing netCDF4 (and likely other deps). Use the project venv, not system Python:\n"
         f"  cd {_root}\n"
         "  .\\.venv\\Scripts\\Activate.ps1\n"
-        "  python scripts/tempo_l2_to_4326.py --nc data/palisades/tempo/<your>.nc\n",
+        "  python scripts/tempo_l2_to_4326.py --nc smoke-plume-data/<region>/tempo/<your>.nc\n",
         file=sys.stderr,
     )
     sys.exit(1)

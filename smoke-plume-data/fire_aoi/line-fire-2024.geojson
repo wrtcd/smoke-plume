@@ -1,0 +1,50 @@
+{
+  "bbox": [
+    -117.35,
+    34.08,
+    -117.05,
+    34.32
+  ],
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -117.35,
+              34.08
+            ],
+            [
+              -117.05,
+              34.08
+            ],
+            [
+              -117.05,
+              34.32
+            ],
+            [
+              -117.35,
+              34.32
+            ],
+            [
+              -117.35,
+              34.08
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-09-05",
+        "feature_id": "line-fire-2024",
+        "rank": 3,
+        "name": "Line Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Line Fire AOI"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

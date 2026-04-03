@@ -1,6 +1,6 @@
 """
 Step 2 checkpoint: export Planet blue/NIR ratio + smoke mask (full + preview),
-and sub-pixel plume fraction f_p on the TEMPO grid (same as palisades_pipeline).
+and sub-pixel plume fraction f_p on the TEMPO grid (same as smoke_plume_pipeline).
 
 Run from repo root:
   python scripts/export_planet_smoke_step2.py
@@ -16,7 +16,7 @@ import rasterio
 from rasterio.transform import Affine
 from rasterio.warp import Resampling, reproject
 
-from palisades_pipeline import (
+from smoke_plume_pipeline import (
     DEFAULT_PLANET,
     DEFAULT_TEMPO,
     MASK_NODATA_OUT,

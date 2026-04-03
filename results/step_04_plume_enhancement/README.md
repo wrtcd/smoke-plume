@@ -2,7 +2,7 @@
 
 ### Script
 
-`scripts/palisades_pipeline.py` (same run as mass; Step 4 is the **background subtraction + plume weighting** block).
+`scripts/smoke_plume_pipeline.py` (same run as mass; Step 4 is the **background subtraction + plume weighting** block).
 
 ### Methodology mapping
 
@@ -19,7 +19,7 @@ This is a **practical** background (clean-ish footprint in the scene), not a sep
 Run:
 
 ```text
-python scripts/palisades_pipeline.py --out results/step_04_plume_enhancement --write-maps
+python scripts/smoke_plume_pipeline.py --out results/step_04_plume_enhancement --write-maps
 ```
 
 Writes:

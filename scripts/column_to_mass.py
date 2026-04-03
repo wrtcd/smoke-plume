@@ -4,7 +4,7 @@ Step 5 — Convert plume-weighted excess column (ΔVCD_plume) to total NO2 mass 
   Mass = sum over pixels ( ΔVCD_plume × A ) in molecules → mol → kg
 
   ΔVCD_plume: molecules/cm² (or mol/m² with --vcd-units mol_m2)
-  A: pixel area (m²), from geotransform (same as palisades_pipeline)
+  A: pixel area (m²), from geotransform (same as smoke_plume_pipeline)
 
 Run from repo root:
   python scripts/column_to_mass.py --raster results/step_04_plume_enhancement/delta_vcd_plume.tif
@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 import rasterio
 
-from palisades_pipeline import (
+from smoke_plume_pipeline import (
     REPO_ROOT,
     excess_mass_molec_cm2,
     excess_mass_mol_m2,

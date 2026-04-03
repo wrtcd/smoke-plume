@@ -12,7 +12,7 @@ M_{\mathrm{NO_2}} = \frac{1}{N_A} M_{\mathrm{NO_2}} \sum_i \Delta VCD_i \cdot A_
 - Factor **10⁴**: m² → cm² for the column unit.
 - \(N_A = 6.02214076 \times 10^{23}\) mol⁻¹, \(M_{\mathrm{NO_2}} = 0.046\) kg/mol.
 
-Same logic as `excess_mass_molec_cm2` in `scripts/palisades_pipeline.py`.
+Same logic as `excess_mass_molec_cm2` in `scripts/smoke_plume_pipeline.py`.
 
 ### Script
 
@@ -25,7 +25,7 @@ Writes **`results/step_05_mass/column_mass.json`** (override with **`--out-json`
 
 ### Pipeline
 
-`scripts/palisades_pipeline.py` computes the **same** total as **`total_excess_no2_kg`** in `pipeline_summary.json` when you run the full pipeline; Step 5 here is the **standalone check** from **`delta_vcd_plume.tif`**.
+`scripts/smoke_plume_pipeline.py` computes the **same** total as **`total_excess_no2_kg`** in `pipeline_summary.json` when you run the full pipeline; Step 5 here is the **standalone check** from **`delta_vcd_plume.tif`**.
 
 ### Relation to `masscal.pdf` (and `PROJECT.md` §5)
 

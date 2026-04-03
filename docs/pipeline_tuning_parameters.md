@@ -9,7 +9,7 @@ This document lists **knobs that change numerical outputs** if you adjust them: 
 ## Flow (dependency order)
 
 1. **TEMPO L2 → GeoTIFF** — `scripts/tempo_l2_to_4326.py` (VCD grid, QA, optional AMF plume adjustment).
-2. **Planet mask / \(f_p\)** — `scripts/palisades_pipeline.py` (and optional QGIS exports: `planet_smoke_mask_qgis.py`, `export_planet_smoke_step2.py`).
+2. **Planet mask / \(f_p\)** — `scripts/smoke_plume_pipeline.py` (and optional QGIS exports: `planet_smoke_mask_qgis.py`, `export_planet_smoke_step2.py`).
 3. **Mass from column** — `scripts/column_to_mass.py` (re-integrates `delta_vcd_plume.tif` if you change units or swap rasters).
 
 Changing an **earlier** step’s outputs (especially TEMPO VCD or Planet scene) propagates to everything downstream.
@@ -36,15 +36,15 @@ Changing an **earlier** step’s outputs (especially TEMPO VCD or Planet scene) 
 
 ---
 
-## 2. `palisades_pipeline.py` (mask → \(f_p\) → \(VCD_{bg}\) → ΔVCD → mass)
+## 2. `smoke_plume_pipeline.py` (mask → \(f_p\) → \(VCD_{bg}\) → ΔVCD → mass)
 
 ### Inputs (largest leverage)
 
 | Parameter | Default | Effect |
 |-----------|---------|--------|
-| `--planet` | Palisades pilot path | **Different scene / geometry** → new smoke mask and \(f_p\). |
-| `--tempo` | Palisades pilot path | **Different VCD grid** → new background, ΔVCD, mass. |
-| `--out` | `results/palisades` | Output folder only (does not change math). |
+| `--planet` | Pilot path under `smoke-plume-data/palisades/` | **Different scene / geometry** → new smoke mask and \(f_p\). |
+| `--tempo` | Pilot warped GeoTIFF | **Different VCD grid** → new background, ΔVCD, mass. |
+| `--out` | `results/smoke_plume` | Output folder only (does not change math). |
 
 ### Vertical column interpretation
 
@@ -119,7 +119,7 @@ Same mask tunables as §2–3. Additional:
 | `--vcd-units` | `molec_cm2` | Must match raster units; wrong value → **wrong kg**. |
 | `--out-json` | `results/step_05_mass/column_mass.json` | Output path only. |
 
-Constants **`AVOGADRO`** and **`M_NO2_KG_PER_MOL`** in `palisades_pipeline.py` define the conversion; change only for a deliberate unit/molar-mass revision.
+Constants **`AVOGADRO`** and **`M_NO2_KG_PER_MOL`** in `smoke_plume_pipeline.py` define the conversion; change only for a deliberate unit/molar-mass revision.
 
 ---
 
@@ -128,7 +128,7 @@ Constants **`AVOGADRO`** and **`M_NO2_KG_PER_MOL`** in `palisades_pipeline.py` d
 | Script | Tunables |
 |--------|----------|
 | `compare_ratio_nd_smoke_mask.py` | `--blue-nir-max`, `--blue-band`, `--nir-band`, `--planet` — comparison only. |
-| `palisades_sanity_check.py` | `--results-dir` — reads existing outputs; does not change pipeline numbers. |
+| `smoke_plume_sanity_check.py` | `--results-dir` — reads existing outputs; does not change pipeline numbers. |
 
 ---
 
@@ -140,4 +140,4 @@ Constants **`AVOGADRO`** and **`M_NO2_KG_PER_MOL`** in `palisades_pipeline.py` d
 4. **Band index** mistakes (`--tempo-vcd-band`, Planet bands).  
 5. **`--vcd-units`** anywhere VCD is interpreted (pipeline + `column_to_mass.py`).
 
-Recording **`pipeline_summary.json`** after each run captures most CLI-relevant parameters for the Palisades step.
+Recording **`pipeline_summary.json`** after each run captures most CLI-relevant parameters for the main pipeline step.

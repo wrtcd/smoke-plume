@@ -1,0 +1,37 @@
+{
+  "type": "Feature",
+  "id": "bridge-fire-2024",
+  "properties": {
+    "name": "Bridge Fire",
+    "title": "Bridge Fire AOI",
+    "start_date": "2024-09-08",
+    "description": "Approximate search envelope; not official fire perimeter"
+  },
+  "geometry": {
+    "coordinates": [
+      [
+        [
+          -117.95,
+          34.15
+        ],
+        [
+          -117.55,
+          34.15
+        ],
+        [
+          -117.55,
+          34.38
+        ],
+        [
+          -117.95,
+          34.38
+        ],
+        [
+          -117.95,
+          34.15
+        ]
+      ]
+    ],
+    "type": "Polygon"
+  }
+}

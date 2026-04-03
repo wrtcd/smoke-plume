@@ -37,14 +37,14 @@ Without `--amf-plume-adjust`, bands match the 6-band layout (no band 2 `amf_trop
 
 ### Pipeline
 
-`palisades_pipeline.py` reads **band 1** as VCD (`--tempo-vcd-band 1`).
+`smoke_plume_pipeline.py` reads **band 1** as VCD (`--tempo-vcd-band 1`).
 
 ### Example (QA + cloud + stack + 1 km plume AMF)
 
 ```text
 python scripts/tempo_l2_to_4326.py ^
-  --nc data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc ^
-  -o data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif ^
+  --nc smoke-plume-data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc ^
+  -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif ^
   --max-cloud 0.3 --stack ^
   --amf-plume-adjust --plume-height-agl-m 1000 --plume-fwhm-m 500
 ```

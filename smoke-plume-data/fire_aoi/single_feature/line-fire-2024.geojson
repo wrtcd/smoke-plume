@@ -1,0 +1,37 @@
+{
+  "type": "Feature",
+  "id": "line-fire-2024",
+  "properties": {
+    "name": "Line Fire",
+    "title": "Line Fire AOI",
+    "start_date": "2024-09-05",
+    "description": "Approximate search envelope; not official fire perimeter"
+  },
+  "geometry": {
+    "coordinates": [
+      [
+        [
+          -117.35,
+          34.08
+        ],
+        [
+          -117.05,
+          34.08
+        ],
+        [
+          -117.05,
+          34.32
+        ],
+        [
+          -117.35,
+          34.32
+        ],
+        [
+          -117.35,
+          34.08
+        ]
+      ]
+    ],
+    "type": "Polygon"
+  }
+}

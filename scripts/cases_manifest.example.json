@@ -1,0 +1,21 @@
+{
+  "comment": "Paths are relative to this file's directory unless absolute. Optional base_dir prefixes all relative case paths.",
+  "base_dir": ".",
+  "cases": [
+    {
+      "id": "example_region_1",
+      "planet": "example_region_1/planet.tif",
+      "tempo": "example_region_1/TEMPO_NO2_trop_warped_4326.tif",
+      "time_match": {
+        "tempo_granule_utc": "2025-01-10T18:45:29Z → 2025-01-10T18:52:06Z",
+        "planet_acquired_utc": "2025-01-10T18:52:56.288697Z",
+        "note": "Optional per-case metadata stored in pipeline_summary.json."
+      }
+    },
+    {
+      "id": "example_region_2",
+      "planet_glob": "*_SR_8b.tif",
+      "tempo_glob": "TEMPO*.tif"
+    }
+  ]
+}

@@ -1,15 +1,12 @@
 """
-Palisades pilot pipeline (TODO 3): time-match metadata, Planet smoke mask,
-overlap fraction f_p on TEMPO grid, background subtraction, excess column,
-total NO2 mass (Step 5: see also scripts/column_to_mass.py on delta_vcd_plume.tif).
+Smoke plume NO₂ pipeline: Planet smoke mask, overlap fraction f_p on TEMPO grid,
+background subtraction, excess column, total NO₂ mass (see also scripts/column_to_mass.py).
 
-Expects pilot rasters from PROJECT.md (local; *.tif is gitignored):
-  - data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif
-  - data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif
+Default inputs point at the Palisades pilot under smoke-plume-data/; override with --planet / --tempo.
 
 Run from repo root:
   .\\.venv\\Scripts\\Activate.ps1
-  python scripts/palisades_pipeline.py
+  python scripts/smoke_plume_pipeline.py
 """
 
 from __future__ import annotations
@@ -24,9 +21,12 @@ import rasterio
 from rasterio.warp import Resampling, reproject
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_PLANET = REPO_ROOT / "data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif"
-DEFAULT_TEMPO = REPO_ROOT / "data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif"
-DEFAULT_OUT_DIR = REPO_ROOT / "results/palisades"
+DEFAULT_PLANET = (
+    REPO_ROOT
+    / "smoke-plume-data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif"
+)
+DEFAULT_TEMPO = REPO_ROOT / "smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif"
+DEFAULT_OUT_DIR = REPO_ROOT / "results/smoke_plume"
 
 # Default: PlanetScope 8-band analytic SR (1-based): Blue=2, NIR=8 (see --blue-band / --nir-band)
 
@@ -35,11 +35,15 @@ MASK_NODATA_OUT = -9999.0
 AVOGADRO = 6.022_140_76e23
 M_NO2_KG_PER_MOL = 46e-3
 
-TIME_MATCH = {
+# Used in pipeline_summary.json when --time-match is not supplied per case (Palisades pilot example).
+DEFAULT_TIME_MATCH = {
     "tempo_granule_utc": "2025-01-10T18:45:29Z → 2025-01-10T18:52:06Z",
     "planet_acquired_utc": "2025-01-10T18:52:56.288697Z",
     "note": "Planet ~50 s after granule end; prefer next L2 granule or explicit ±Δt (PROJECT.md).",
 }
+
+# Back-compat for imports
+TIME_MATCH = DEFAULT_TIME_MATCH
 
 
 def _pixel_areas_m2(transform: rasterio.Affine, height: int, width: int) -> np.ndarray:
@@ -227,6 +231,7 @@ def run(
     ndhi_smoke_below: float = 0.0,
     ndhi_bnir_smoke_above: float = -0.15,
     mask_nodata: float = MASK_NODATA_OUT,
+    time_match: dict | None = None,
 ) -> dict:
     if not planet_path.is_file():
         raise FileNotFoundError(f"Missing Planet raster: {planet_path}")
@@ -295,7 +300,7 @@ def run(
 
     plume_mask = f_p > 0.01
     summary = {
-        "time_match": TIME_MATCH,
+        "time_match": time_match if time_match is not None else DEFAULT_TIME_MATCH,
         "inputs": {"planet": str(planet_path), "tempo": str(tempo_path)},
         "parameters": {
             "vcd_units": vcd_units,
@@ -360,7 +365,7 @@ def run(
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Palisades smoke plume NO2 pipeline (TODO 3).")
+    p = argparse.ArgumentParser(description="Smoke plume NO₂: Planet mask, f_p, ΔVCD, mass.")
     p.add_argument("--planet", type=Path, default=DEFAULT_PLANET)
     p.add_argument("--tempo", type=Path, default=DEFAULT_TEMPO)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT_DIR)
@@ -441,8 +446,8 @@ def main() -> None:
     except FileNotFoundError as e:
         print(str(e), file=sys.stderr)
         print(
-            "\nPlace pilot rasters under data/palisades/ (see PROJECT.md). "
-            "Large *.tif files are gitignored.",
+            "\nPlace rasters under smoke-plume-data/<region>/ (see PROJECT.md). "
+            "Large *.tif files may be gitignored.",
             file=sys.stderr,
         )
         sys.exit(1)

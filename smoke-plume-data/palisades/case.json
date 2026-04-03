@@ -1,0 +1,10 @@
+{
+  "id": "palisades",
+  "planet": "planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif",
+  "tempo": "tempo/TEMPO_NO2_trop_warped_4326.tif",
+  "time_match": {
+    "tempo_granule_utc": "2025-01-10T18:45:29Z → 2025-01-10T18:52:06Z",
+    "planet_acquired_utc": "2025-01-10T18:52:56.288697Z",
+    "note": "Planet ~50 s after granule end; prefer next L2 granule or explicit ±Δt (PROJECT.md)."
+  }
+}

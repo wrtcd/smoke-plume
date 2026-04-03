@@ -1,0 +1,50 @@
+{
+  "bbox": [
+    -118.78,
+    34.0,
+    -118.45,
+    34.14
+  ],
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -118.78,
+              34.0
+            ],
+            [
+              -118.45,
+              34.0
+            ],
+            [
+              -118.45,
+              34.14
+            ],
+            [
+              -118.78,
+              34.14
+            ],
+            [
+              -118.78,
+              34.0
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2025-01-07",
+        "feature_id": "palisades-fire-2025",
+        "rank": 4,
+        "name": "Palisades Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Palisades Fire AOI"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

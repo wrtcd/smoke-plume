@@ -1,0 +1,50 @@
+{
+  "bbox": [
+    -117.62,
+    33.62,
+    -117.42,
+    33.78
+  ],
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -117.62,
+              33.62
+            ],
+            [
+              -117.42,
+              33.62
+            ],
+            [
+              -117.42,
+              33.78
+            ],
+            [
+              -117.62,
+              33.78
+            ],
+            [
+              -117.62,
+              33.62
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-09-09",
+        "feature_id": "airport-fire-2024",
+        "rank": 5,
+        "name": "Airport Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Airport Fire AOI"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

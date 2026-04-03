@@ -1,0 +1,50 @@
+{
+  "bbox": [
+    -118.2,
+    34.16,
+    -118.04,
+    34.26
+  ],
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -118.2,
+              34.16
+            ],
+            [
+              -118.04,
+              34.16
+            ],
+            [
+              -118.04,
+              34.26
+            ],
+            [
+              -118.2,
+              34.26
+            ],
+            [
+              -118.2,
+              34.16
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2025-01-07",
+        "feature_id": "eaton-fire-2025",
+        "rank": 6,
+        "name": "Eaton Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Eaton Fire AOI"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

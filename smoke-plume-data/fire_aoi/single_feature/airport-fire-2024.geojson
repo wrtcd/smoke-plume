@@ -1,0 +1,37 @@
+{
+  "type": "Feature",
+  "id": "airport-fire-2024",
+  "properties": {
+    "name": "Airport Fire",
+    "title": "Airport Fire AOI",
+    "start_date": "2024-09-09",
+    "description": "Approximate search envelope; not official fire perimeter"
+  },
+  "geometry": {
+    "coordinates": [
+      [
+        [
+          -117.62,
+          33.62
+        ],
+        [
+          -117.42,
+          33.62
+        ],
+        [
+          -117.42,
+          33.78
+        ],
+        [
+          -117.62,
+          33.78
+        ],
+        [
+          -117.62,
+          33.62
+        ]
+      ]
+    ],
+    "type": "Polygon"
+  }
+}

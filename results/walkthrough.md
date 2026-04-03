@@ -13,12 +13,12 @@ This file is a **running lab notebook** for the pipeline. Each step records:
 
 ### Inputs (locked)
 
-- **Planet (SR, 8-band GeoTIFF)**: `data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif`
+- **Planet (SR, 8-band GeoTIFF)**: `smoke-plume-data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif`
   - **Acquired (UTC)**: `2025-01-10T18:52:56.288697Z`
   - **Bands used by our mask prototype** (1-based): Blue = **2**, NIR = **8**
-  - **Sidecar**: `data/palisades/planet/20250110_185256_28_24e1_metadata.json`
+  - **Sidecar**: `smoke-plume-data/palisades/planet/20250110_185256_28_24e1_metadata.json`
 
-- **TEMPO NO₂ L2 V03 (NetCDF)**: `data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc`
+- **TEMPO NO₂ L2 V03 (NetCDF)**: `smoke-plume-data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc`
   - **time_coverage_start/end (UTC)**: `2025-01-10T18:45:29Z → 18:52:06Z`
   - **Key variables present** (as confirmed from the file variable list):
     - **Tropospheric NO₂ VCD**: `/product/vertical_column_troposphere`
@@ -58,7 +58,7 @@ Create a **binary smoke mask** \(M\) on the **native high-resolution Planet** im
 
 ### Inputs
 
-- **Planet (SR, 8-band GeoTIFF)**: `data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif`
+- **Planet (SR, 8-band GeoTIFF)**: `smoke-plume-data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif`
   - **Bands used (1-based)**: Blue = **2**, NIR = **8**
   - CRS (from Step 1 manifest): **EPSG:32611**
 
@@ -74,7 +74,7 @@ This is a **prototype heuristic** mask (fast + inspectable). It can confuse thin
 
 ### Sub-pixel plume fraction \(f_p\) (yes — implemented)
 
-**Critical:** In `scripts/palisades_pipeline.py`, `reproject_mask_to_tempo` warps the **Planet smoke mask** to the **TEMPO** grid using **`Resampling.average`**. Each TEMPO pixel holds a value in **[0, 1]** = **mean mask value** over that footprint = **smoke area fraction** for a 0/1 mask. That is **`f_p`**, used as `delta_vcd_plume = f_p * (VCD - VCD_bg)`.
+**Critical:** In `scripts/smoke_plume_pipeline.py`, `reproject_mask_to_tempo` warps the **Planet smoke mask** to the **TEMPO** grid using **`Resampling.average`**. Each TEMPO pixel holds a value in **[0, 1]** = **mean mask value** over that footprint = **smoke area fraction** for a 0/1 mask. That is **`f_p`**, used as `delta_vcd_plume = f_p * (VCD - VCD_bg)`.
 
 Export for QGIS (same math): `python scripts/export_planet_smoke_step2.py` writes `results/step_02_plume_mask/f_p_tempo_grid.tif`.
 
@@ -112,7 +112,7 @@ Optionally **rescale tropospheric VCD** for an assumed **plume height** (default
 
 ### Downstream
 
-- **`scripts/palisades_pipeline.py`** uses **band 1** as VCD (`--tempo-vcd-band`, default **1**).
+- **`scripts/smoke_plume_pipeline.py`** uses **band 1** as VCD (`--tempo-vcd-band`, default **1**).
 
 ### Observations / caveats
 
@@ -129,7 +129,7 @@ Estimate a **background column** \(VCD_{bg}\), compute **excess** \(\Delta VCD =
 
 ### Script / actions
 
-- **`scripts/palisades_pipeline.py`** — uses **band 1** TEMPO VCD (after Step 3 processing), Planet \(f_p\), **`--fp-bg-max`** for background pixel selection, **`--write-maps`** to export rasters.
+- **`scripts/smoke_plume_pipeline.py`** — uses **band 1** TEMPO VCD (after Step 3 processing), Planet \(f_p\), **`--fp-bg-max`** for background pixel selection, **`--write-maps`** to export rasters.
 
 ### Outputs (checkpoint)
 
@@ -151,7 +151,7 @@ Integrate **plume-weighted excess column** \(\Delta VCD_{plume}\) (molecules/cm�
 
 ### Script / actions
 
-- **`scripts/palisades_pipeline.py`** — computes **`total_excess_no2_kg`** (same integral as Step 5).
+- **`scripts/smoke_plume_pipeline.py`** — computes **`total_excess_no2_kg`** (same integral as Step 5).
 - **`scripts/column_to_mass.py`** — recomputes mass from **`delta_vcd_plume.tif`** only; writes **`results/step_05_mass/column_mass.json`** for verification.
 
 ### Outputs (checkpoint)

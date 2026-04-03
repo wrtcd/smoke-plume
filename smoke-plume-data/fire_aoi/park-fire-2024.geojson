@@ -1,0 +1,50 @@
+{
+  "bbox": [
+    -122.15,
+    39.55,
+    -121.2,
+    40.55
+  ],
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -122.15,
+              39.55
+            ],
+            [
+              -121.2,
+              39.55
+            ],
+            [
+              -121.2,
+              40.55
+            ],
+            [
+              -122.15,
+              40.55
+            ],
+            [
+              -122.15,
+              39.55
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-07-24",
+        "feature_id": "park-fire-2024",
+        "rank": 1,
+        "name": "Park Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Park Fire AOI"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

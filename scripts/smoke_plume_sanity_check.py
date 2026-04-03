@@ -1,10 +1,10 @@
 """
-TODO 4: Sanity-check pipeline results; save preview maps and a results table.
+Sanity-check pipeline results; save preview maps and a results table.
 
-Reads results/palisades/pipeline_summary.json and GeoTIFFs f_p.tif,
-delta_vcd_plume.tif when present. Run after palisades_pipeline.py --write-maps.
+Reads pipeline_summary.json and GeoTIFFs f_p.tif, delta_vcd_plume.tif when present.
+Run after smoke_plume_pipeline.py --write-maps.
 
-  .venv\\Scripts\\python.exe scripts/palisades_sanity_check.py
+  .venv\\Scripts\\python.exe scripts/smoke_plume_sanity_check.py
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ import numpy as np
 import rasterio
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_RESULTS = REPO_ROOT / "results/palisades"
+DEFAULT_RESULTS = REPO_ROOT / "results/smoke_plume"
 
 
 def _crop_slices(f_p: np.ndarray, thresh: float, margin: int) -> tuple[slice, slice]:
@@ -49,13 +49,13 @@ def main() -> None:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    p = argparse.ArgumentParser(description="Sanity checks + maps for Palisades pipeline (TODO 4).")
+    p = argparse.ArgumentParser(description="Sanity checks + maps for smoke plume pipeline outputs.")
     p.add_argument("--results-dir", type=Path, default=DEFAULT_RESULTS)
     args = p.parse_args()
     rd = args.results_dir
     summary_path = rd / "pipeline_summary.json"
     if not summary_path.is_file():
-        print(f"Missing {summary_path}; run scripts/palisades_pipeline.py first.", file=sys.stderr)
+        print(f"Missing {summary_path}; run scripts/smoke_plume_pipeline.py first.", file=sys.stderr)
         sys.exit(1)
 
     summary = json.loads(summary_path.read_text(encoding="utf-8"))

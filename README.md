@@ -22,17 +22,23 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Large rasters (`*.tif`, `*.nc`) are **gitignored**; keep them under `data/` locally. Do **not** `pip install gdal` into this venv—use OSGeo4W/QGIS GDAL on PATH if needed, or `scripts/tempo_l2_to_4326.py` for swath→GeoTIFF.
+Large rasters (`*.tif`, `*.nc`) are **gitignored**; study-region folders live under **`smoke-plume-data/`** (see `smoke-plume-data/README.md`). Do **not** `pip install gdal` into this venv—use OSGeo4W/QGIS GDAL on PATH if needed, or `scripts/tempo_l2_to_4326.py` for swath→GeoTIFF.
 
 ## Typical run (after placing pilot rasters per PROJECT.md)
 
 ```powershell
-python scripts/tempo_l2_to_4326.py --nc data/palisades/tempo/<granule>.nc -o data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif
-python scripts/palisades_pipeline.py --write-maps
-python scripts/palisades_sanity_check.py
+python scripts/tempo_l2_to_4326.py --nc smoke-plume-data/palisades/tempo/<granule>.nc -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif
+python scripts/smoke_plume_pipeline.py --write-maps
+python scripts/smoke_plume_sanity_check.py
 ```
 
-Default pipeline outputs: **`results/palisades/`** (mostly gitignored; JSON/maps are local). Walkthrough checkpoints also use **`results/step_01_inputs/`** … **`step_05_mass/`** (see walkthrough).
+Batch (six regions under `smoke-plume-data/`, each with `case.json`):
+
+```powershell
+python scripts/run_all_cases.py --cases-root smoke-plume-data --out-root results/study_batch --write-maps
+```
+
+Default single-run outputs: **`results/smoke_plume/`** (mostly gitignored; JSON/maps are local). Walkthrough checkpoints also use **`results/step_01_inputs/`** … **`step_05_mass/`** (see walkthrough).
 
 ## Scripts (overview)
 
@@ -40,12 +46,14 @@ Default pipeline outputs: **`results/palisades/`** (mostly gitignored; JSON/maps
 |--------|------|
 | `tempo_l2_to_4326.py` | TEMPO L2 NetCDF → EPSG:4326 GeoTIFF (QA, cloud, optional AMF plume adjust) |
 | `tempo_amf_plume_adjust.py` | AMF rescaling helper (used by tempo script) |
-| `palisades_pipeline.py` | Planet mask → \(f_p\), \(VCD_{bg}\), ΔVCD, mass; optional GeoTIFF maps |
+| `smoke_plume_pipeline.py` | Planet mask → \(f_p\), \(VCD_{bg}\), ΔVCD, mass; optional GeoTIFF maps |
 | `export_planet_smoke_step2.py` | Step 2: Planet mask + \(f_p\) exports |
 | `planet_smoke_mask_qgis.py` | QGIS-oriented mask + index layers |
 | `column_to_mass.py` | Integrate `delta_vcd_plume.tif` → kg NO₂ |
-| `palisades_sanity_check.py` | Quick checks + preview maps from pipeline outputs |
+| `smoke_plume_sanity_check.py` | Quick checks + preview maps from pipeline outputs |
 | `compare_ratio_nd_smoke_mask.py` | Optional: algebra check (B/NIR ratio vs normalized difference threshold) |
+| `run_all_cases.py` | Run `smoke_plume_pipeline` for many regions (folder layout or JSON manifest → `batch_summary.json`) |
+| `gee_tempo_l3_no2_layers.js` | Optional: Earth Engine — TEMPO NO₂ L3 QA-filtered maps (edit AOI/dates) |
 
 ## Repository layout
 
@@ -53,7 +61,7 @@ Default pipeline outputs: **`results/palisades/`** (mostly gitignored; JSON/maps
 ├── PROJECT.md              # Science + methodology reference
 ├── README.md               # This file
 ├── requirements.txt
-├── data/                   # Local-only rasters (see data/README.md)
+├── smoke-plume-data/       # Study regions: planet/ + tempo/ per folder (see smoke-plume-data/README.md)
 ├── docs/                   # Guides (mask challenges, tuning knobs, fire AOIs)
 ├── scripts/                # Python pipeline
 └── results/                # Walkthrough *.md tracked; other outputs gitignored

@@ -10,10 +10,10 @@ Small disagreements can occur where NIR is tiny (ratio uses max(NIR, 1e-8)).
 Run from repo root:
   python scripts/compare_ratio_nd_smoke_mask.py          # demo only (no numpy needed)
   python scripts/compare_ratio_nd_smoke_mask.py --demo   # same
-  python scripts/compare_ratio_nd_smoke_mask.py --planet data/palisades/planet/your.tif   # needs numpy, rasterio
+  python scripts/compare_ratio_nd_smoke_mask.py --planet smoke-plume-data/palisades/planet/your.tif   # needs numpy, rasterio
 
 Uses .format() instead of f-strings so this runs on Python 3.5+; smoke_mask is inlined
-so we do not import palisades_pipeline (which requires 3.6+ for f-strings).
+so we do not import smoke_plume_pipeline (which requires 3.6+ for f-strings).
 """
 
 from __future__ import print_function
@@ -25,7 +25,7 @@ from pathlib import Path
 # without those deps (e.g. system Python 3.5 with no venv).
 
 def smoke_mask_from_sr(blue, nir, blue_nir_max):
-    """Same logic as palisades_pipeline.smoke_mask_from_sr (kept inline for Py3.5)."""
+    """Same logic as smoke_plume_pipeline.smoke_mask_from_sr (kept inline for Py3.5)."""
     import numpy as np
 
     denom = np.maximum(nir, 1e-8)

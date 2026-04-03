@@ -1,0 +1,37 @@
+{
+  "type": "Feature",
+  "id": "eaton-fire-2025",
+  "properties": {
+    "name": "Eaton Fire",
+    "title": "Eaton Fire AOI",
+    "start_date": "2025-01-07",
+    "description": "Approximate search envelope; not official fire perimeter"
+  },
+  "geometry": {
+    "coordinates": [
+      [
+        [
+          -118.2,
+          34.16
+        ],
+        [
+          -118.04,
+          34.16
+        ],
+        [
+          -118.04,
+          34.26
+        ],
+        [
+          -118.2,
+          34.26
+        ],
+        [
+          -118.2,
+          34.16
+        ]
+      ]
+    ],
+    "type": "Polygon"
+  }
+}

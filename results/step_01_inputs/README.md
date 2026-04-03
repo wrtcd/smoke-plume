@@ -4,10 +4,10 @@ This folder is a **checkpoint** for Step 1 (acquire coincident data + lock metad
 
 ### What we used (exact files)
 
-- **Planet (SR, 8-band)**: `data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif`
-- **Planet sidecar metadata**: `data/palisades/planet/20250110_185256_28_24e1_metadata.json`
-- **TEMPO L2 NO₂ (NetCDF)**: `data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc`
-- **Derived TEMPO NO₂ trop VCD raster (EPSG:4326)**: `data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif`
+- **Planet (SR, 8-band)**: `smoke-plume-data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif`
+- **Planet sidecar metadata**: `smoke-plume-data/palisades/planet/20250110_185256_28_24e1_metadata.json`
+- **TEMPO L2 NO₂ (NetCDF)**: `smoke-plume-data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc`
+- **Derived TEMPO NO₂ trop VCD raster (EPSG:4326)**: `smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif`
 
 ### What to open in QGIS (quick check)
 

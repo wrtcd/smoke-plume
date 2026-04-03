@@ -1,0 +1,37 @@
+{
+  "type": "Feature",
+  "id": "palisades-fire-2025",
+  "properties": {
+    "name": "Palisades Fire",
+    "title": "Palisades Fire AOI",
+    "start_date": "2025-01-07",
+    "description": "Approximate search envelope; not official fire perimeter"
+  },
+  "geometry": {
+    "coordinates": [
+      [
+        [
+          -118.78,
+          34.0
+        ],
+        [
+          -118.45,
+          34.0
+        ],
+        [
+          -118.45,
+          34.14
+        ],
+        [
+          -118.78,
+          34.14
+        ],
+        [
+          -118.78,
+          34.0
+        ]
+      ]
+    ],
+    "type": "Polygon"
+  }
+}

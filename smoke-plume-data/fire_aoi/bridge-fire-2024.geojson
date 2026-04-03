@@ -1,0 +1,50 @@
+{
+  "bbox": [
+    -117.95,
+    34.15,
+    -117.55,
+    34.38
+  ],
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -117.95,
+              34.15
+            ],
+            [
+              -117.55,
+              34.15
+            ],
+            [
+              -117.55,
+              34.38
+            ],
+            [
+              -117.95,
+              34.38
+            ],
+            [
+              -117.95,
+              34.15
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-09-08",
+        "feature_id": "bridge-fire-2024",
+        "rank": 2,
+        "name": "Bridge Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Bridge Fire AOI"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

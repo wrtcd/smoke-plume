@@ -42,14 +42,14 @@ Working configuration for this repository’s first case; update if you change d
 | **GEE-only check**          | **NASA/TEMPO/NO2_L3_QA** — L3 QA-filtered maps; **not** interchangeable with L2 footprints.                                                               |
 
 
-Local data layout: `data/palisades/tempo/`, `data/palisades/planet/`.
+Local data layout: `smoke-plume-data/<region>/tempo/`, `smoke-plume-data/<region>/planet/` (six study regions: airport, bridge, eaton, line, palisades, park).
 
 **Pilot test rasters (first integration test):**
 
 | Role | File |
 |------|------|
-| **Planet (SR)** | `data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif` — 8-band **analytic surface reflectance** (RGB + NIR, etc.) for smoke masking. |
-| **TEMPO (NO₂ trop., mapped)** | `data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif` — `gdalwarp -geoloc` export of `/product/vertical_column_troposphere` in **EPSG:4326** (from the locked L2 granule). |
+| **Planet (SR)** | `smoke-plume-data/palisades/planet/20250110_185256_28_24e1_3B_AnalyticMS_SR_8b.tif` — 8-band **analytic surface reflectance** (RGB + NIR, etc.) for smoke masking. |
+| **TEMPO (NO₂ trop., mapped)** | `smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif` — `gdalwarp -geoloc` or `tempo_l2_to_4326.py` export of `/product/vertical_column_troposphere` in **EPSG:4326** (from the locked L2 granule). |
 
 Python dependencies: see **`requirements.txt`** in the repository root.
 

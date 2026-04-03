@@ -1,0 +1,245 @@
+{
+  "bbox": [
+    -122.15,
+    33.62,
+    -117.05,
+    40.55
+  ],
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -122.15,
+              39.55
+            ],
+            [
+              -121.2,
+              39.55
+            ],
+            [
+              -121.2,
+              40.55
+            ],
+            [
+              -122.15,
+              40.55
+            ],
+            [
+              -122.15,
+              39.55
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-07-24",
+        "feature_id": "park-fire-2024",
+        "rank": 1,
+        "name": "Park Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Park Fire AOI"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -117.95,
+              34.15
+            ],
+            [
+              -117.55,
+              34.15
+            ],
+            [
+              -117.55,
+              34.38
+            ],
+            [
+              -117.95,
+              34.38
+            ],
+            [
+              -117.95,
+              34.15
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-09-08",
+        "feature_id": "bridge-fire-2024",
+        "rank": 2,
+        "name": "Bridge Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Bridge Fire AOI"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -117.35,
+              34.08
+            ],
+            [
+              -117.05,
+              34.08
+            ],
+            [
+              -117.05,
+              34.32
+            ],
+            [
+              -117.35,
+              34.32
+            ],
+            [
+              -117.35,
+              34.08
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-09-05",
+        "feature_id": "line-fire-2024",
+        "rank": 3,
+        "name": "Line Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Line Fire AOI"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -118.78,
+              34.0
+            ],
+            [
+              -118.45,
+              34.0
+            ],
+            [
+              -118.45,
+              34.14
+            ],
+            [
+              -118.78,
+              34.14
+            ],
+            [
+              -118.78,
+              34.0
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2025-01-07",
+        "feature_id": "palisades-fire-2025",
+        "rank": 4,
+        "name": "Palisades Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Palisades Fire AOI"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -117.62,
+              33.62
+            ],
+            [
+              -117.42,
+              33.62
+            ],
+            [
+              -117.42,
+              33.78
+            ],
+            [
+              -117.62,
+              33.78
+            ],
+            [
+              -117.62,
+              33.62
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2024-09-09",
+        "feature_id": "airport-fire-2024",
+        "rank": 5,
+        "name": "Airport Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Airport Fire AOI"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -118.2,
+              34.16
+            ],
+            [
+              -118.04,
+              34.16
+            ],
+            [
+              -118.04,
+              34.26
+            ],
+            [
+              -118.2,
+              34.26
+            ],
+            [
+              -118.2,
+              34.16
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "start_date": "2025-01-07",
+        "feature_id": "eaton-fire-2025",
+        "rank": 6,
+        "name": "Eaton Fire",
+        "aoi_note": "Approximate search envelope; not official fire perimeter",
+        "source": "docs/fire_locations_explore.md",
+        "title": "Eaton Fire AOI"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}
