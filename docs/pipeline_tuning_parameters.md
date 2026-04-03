@@ -132,6 +132,39 @@ Constants **`AVOGADRO`** and **`M_NO2_KG_PER_MOL`** in `smoke_plume_pipeline.py`
 
 ---
 
+## 7. Batch and study-batch helpers
+
+### `run_all_cases.py` (many regions, one CLI)
+
+Runs `smoke_plume_pipeline.run(...)` once per discovered case. **All pipeline numeric flags** mirror the main pipeline (same defaults as §2): `--vcd-units`, `--mask-method`, `--blue-nir-max`, `--ndhi-smoke-below`, `--ndhi-bnir-smoke-above`, `--mask-nodata`, `--fp-bg-max`, `--blue-band`, `--nir-band`, `--green-band`, `--tempo-vcd-band`, `--write-maps`.
+
+| Parameter | Default | Effect |
+|-----------|---------|--------|
+| `--cases-root` | *(optional if manifest set)* | Folder with one subfolder per region (`case.json` or `planet.tif` + `tempo.tif`). |
+| `--manifest` | off | JSON list of cases (see `cases_manifest.example.json`); alternative to `--cases-root`. |
+| `--out-root` | *(required)* | Base output; each case writes to `out-root/<case_id>/`. |
+| `--dry-run` | off | List cases only; no pipeline runs. |
+| `--fail-fast` | off | Stop on first failure; default is run all and record errors in `batch_summary.json`. |
+
+Case-specific inputs come from each folder’s `case.json` (paths, optional `time_match`), not from extra CLI knobs.
+
+### `study_batch_visuals.py` (maps + PNG previews after the fact)
+
+Re-runs the pipeline with parameters **read from** each case’s `pipeline_summary.json`, then runs `smoke_plume_sanity_check.py`. Does not introduce new **math** parameters beyond what is already stored in that JSON.
+
+| Parameter | Default | Effect |
+|-----------|---------|--------|
+| `--results-root` | `results/study_batch` | Parent of per-case folders (`airport`, `bridge`, …). |
+| `--only` | off | Space-separated case ids; if omitted, every case with `pipeline_summary.json` is processed. |
+
+### `smoke_plume_sanity_check.py`
+
+| Parameter | Default | Effect |
+|-----------|---------|--------|
+| `--results-dir` | pilot results path | Folder with pipeline outputs; writes `maps/*.png`, `sanity_report.json`. Read-only for VCD/mass numbers unless you re-run the pipeline first. |
+
+---
+
 ## Quick “sensitivity” order (what to move first)
 
 1. **Inputs:** TEMPO granule / warping (`--bbox`, `--res`, QA, cloud, **`--amf-plume-adjust`** and height/FWHM).  
