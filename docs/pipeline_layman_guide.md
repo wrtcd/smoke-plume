@@ -84,6 +84,82 @@ flowchart LR
 
 ---
 
+## Six case studies — same pipeline, six real fires (compare & contrast)
+
+You have **six folders** under `smoke-plume-data/` (airport, bridge, eaton, line, palisades, park). Think of them as **six homework problems with the same instructions**: same mask recipe, same background rule, same mass recipe—but **different days, fires, scenes, and TEMPO granules**. Below is how to **read the batch results without mistaking them for a sports leaderboard**.
+
+### The mental model (so it “sticks”)
+
+| Layer | Plain English | What varies across the six |
+|------|----------------|----------------------------|
+| **Planet** | “Where does it *look* smoky at fine scale?” | Scene extent, sun angle, haze, terrain—mask is never identical. |
+| **TEMPO** | “How much NO₂ is in the air column above each big pixel?” | Chemistry, transport, granule time, and **how huge the warped grid is**. |
+| **f_p** | “When we pour Planet into TEMPO, how smoky is each big pixel?” | Same math; different overlap patterns. |
+| **Mass (kg)** | Sum of **f_p × excess column × pixel area** over the **whole GeoTIFF**. | **Not** “tons from the fire engine”—it’s **integrated over the entire raster domain** unless you clip. |
+
+So: **absorb this in your bones** as *one consistent measurement machine pointed at six different worlds*, not six guaranteed-comparable “fire scores.”
+
+### Numbers for all six (one batch, same defaults)
+
+These match the study batch documented in [STUDY_BATCH_RESULTS.md](../results/study_batch/STUDY_BATCH_RESULTS.md) (see that file if you regenerate runs).
+
+| Region | Total excess NO₂ (kg) | “Smoky” TEMPO pixels (f_p > 0.01) | TEMPO grid (pixels) | VCD background median (molec/cm²) |
+|--------|----------------------:|----------------------------------:|--------------------:|-------------------------------------:|
+| airport | 1,515 | 467 | ~9.64 M | ~5.5 × 10¹⁴ |
+| bridge | 3,987 | 534 | ~8.87 M | ~8.3 × 10¹⁴ |
+| eaton | 1,957 | 845 | ~8.04 M | ~6.7 × 10¹⁴ |
+| line | 2,832 | 433 | ~8.22 M | ~6.9 × 10¹⁴ |
+| palisades | 1,375 | 73 | **~2.10 M** | ~9.2 × 10¹⁴ |
+| park | 1,238 | 649 | ~9.31 M | ~5.9 × 10¹⁴ |
+
+**Notice:** **Palisades** sits on a **much smaller TEMPO grid** (fewer rows/columns in the file) than the others. That is a **file footprint / swath** effect, not “a smaller fire.” The mass sum always runs over **whatever pixels exist in that GeoTIFF**.
+
+### Pictures: three ways your eyes can disagree with your gut
+
+**1 — Total kg (integrated “smoke NO₂ burden” in the domain)**  
+Who’s highest here depends on **both** smoke overlap **and** how strong ΔNO₂ is in those cells—not just “how big the fire felt emotionally.”
+
+![Bar charts: mass, plume pixels, grid size for six regions](images/case_study_six_way_bars.png)
+
+**2 — Mass vs. count of “plume-ish” pixels**  
+If high mass always came from “more plume pixels,” points would hug a neat line. They don’t—because **a few pixels with huge excess column** can rival **many pixels with modest excess**.
+
+![Scatter: mass vs plume pixel count](images/case_study_mass_vs_plume_scatter.png)
+
+**3 — Rough “intensity per smoky cell” (kg ÷ plume-pixel count)**  
+This is **not** a physical emission factor—it’s a **cartoon ratio** to build intuition: *when plume-pixel count is tiny but mass isn’t, each flagged cell is carrying a lot of integrated signal* (Palisades often stands out here).
+
+![Bar: kg per plume pixel (ranked)](images/case_study_kg_per_plume_pixel.png)
+
+### ELI5 contrasts (scientifically honest)
+
+- **Line vs. eaton:** Line can show **higher total kg** with **fewer** “smoky” coarse pixels than eaton—because **column strength** matters as much as **how many** cells pass the f_p threshold.
+- **Palisades vs. park:** Palisades has **far fewer** plume-flagged pixels than park, yet **similar order** total kg—classic sign that **signal per cell** is strong where the mask and TEMPO agree.
+- **Bridge:** After switching to **surface reflectance**, the mask finally “sees” smoke on the TEMPO grid; before that, the pipeline could report **~0** not because the atmosphere was clean, but because **the wrong Planet product** broke the mask (see bridge notes in [STUDY_BATCH_RESULTS.md](../results/study_batch/STUDY_BATCH_RESULTS.md)).
+
+### Statistical-ish vocabulary in human language
+
+- **Central tendency:** Across these six, total kg spans **roughly ~1.2k–4k** with this setup—useful as an **order-of-magnitude family**, not a universal law.
+- **Outlier sensitivity:** One bad asset (wrong Planet type) can move a case from **~0** to **thousands of kg**—always check **inputs** before interpreting **outputs**.
+- **Correlation ≠ causation:** Higher kg does **not** mean “worse fire” in any moral or regulatory sense; it means **this integrated model** assigned more plume-weighted excess column **inside that GeoTIFF**.
+
+### Open the real map previews (same file names, six folders)
+
+After running `study_batch_visuals.py`, compare **side by side**:
+
+`results/study_batch/<region>/maps/f_p_preview.png`  
+`results/study_batch/<region>/maps/delta_vcd_plume_preview.png`
+
+Swap `<region>` through **airport, bridge, eaton, line, palisades, park**. Your eyes will catch geometry and haze faster than any table.
+
+### Regenerate the comparison figures
+
+```powershell
+py -3 scripts/render_case_study_comparison.py
+```
+
+---
+
 ## Where this lives in your repo (outputs)
 
 After you run the pipeline (and optionally map exports), each case folder has:
@@ -146,6 +222,9 @@ py -3 scripts/study_batch_visuals.py --results-root results/study_batch
 
 # Rebuild only the small schematic images in this guide
 py -3 scripts/render_pipeline_guide_assets.py
+
+# Rebuild the six-case comparison bar/scatter figures (reads pipeline_summary.json when present)
+py -3 scripts/render_case_study_comparison.py
 ```
 
 ---

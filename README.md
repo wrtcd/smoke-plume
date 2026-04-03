@@ -56,6 +56,7 @@ Default single-run outputs: **`results/smoke_plume/`** (mostly gitignored; JSON/
 | `run_all_cases.py` | Run `smoke_plume_pipeline` for many regions (folder layout or JSON manifest → `batch_summary.json`) |
 | `study_batch_visuals.py` | For each `results/study_batch/<case>/`: write map GeoTIFFs + PNG previews (`maps/*.png`) via sanity check |
 | `render_pipeline_guide_assets.py` | Build small schematic PNGs in `docs/images/` for [pipeline_layman_guide.md](docs/pipeline_layman_guide.md) |
+| `render_case_study_comparison.py` | Build six-case bar/scatter figures in `docs/images/` from `results/study_batch/*/pipeline_summary.json` |
 | `gee_tempo_l3_no2_layers.js` | Optional: Earth Engine — TEMPO NO₂ L3 QA-filtered maps (edit AOI/dates) |
 
 ## Repository layout
