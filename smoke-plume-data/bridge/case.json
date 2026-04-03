@@ -1,5 +1,10 @@
 {
   "id": "bridge",
-  "planet": "planet/20240910_184224_02_24f3_3B_AnalyticMS_8b.tif",
-  "tempo": "tempo/TEMPO_NO2_trop_warped_4326.tif"
+  "planet": "planet/20240910_184221_67_24f3_3B_AnalyticMS_SR_8b.tif",
+  "tempo": "tempo/TEMPO_NO2_trop_warped_4326.tif",
+  "time_match": {
+    "tempo_granule_utc": "2024-09-10T18:51:42Z (L2: TEMPO_NO2_L2_V03_20240910T185142Z_S009G08.nc; confirm time_coverage in file)",
+    "planet_acquired_utc": "2024-09-10T18:42:24.022534Z",
+    "note": "PSScene analytic SR 8-band. Prior non-SR asset yielded 0 plume pixels on the TEMPO grid."
+  }
 }
