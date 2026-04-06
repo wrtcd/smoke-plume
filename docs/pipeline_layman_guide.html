@@ -314,53 +314,53 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 <tbody>
 <tr>
 <td>airport</td>
-<td>~1,540</td>
+<td>~766</td>
 <td>470</td>
-<td>~9.31 M</td>
-<td>~3.8 × 10¹⁴</td>
+<td>~1,066</td>
+<td>~4.9 × 10¹⁵</td>
 </tr>
 <tr>
 <td>bridge</td>
-<td>~4,001</td>
-<td>532</td>
-<td>~8.55 M</td>
-<td>~5.0 × 10¹⁴</td>
+<td>~769</td>
+<td>536</td>
+<td>~912</td>
+<td>~7.4 × 10¹⁵</td>
 </tr>
 <tr>
 <td>eaton</td>
-<td>~1,702</td>
+<td><strong>~-1,568</strong></td>
 <td>840</td>
-<td>~7.94 M</td>
-<td>~5.7 × 10¹⁴</td>
+<td>~1,470</td>
+<td>~9.2 × 10¹⁵</td>
 </tr>
 <tr>
 <td>line</td>
-<td>~2,769</td>
+<td>~432</td>
 <td>433</td>
-<td>~7.95 M</td>
-<td>~6.8 × 10¹⁴</td>
+<td>~1,170</td>
+<td>~7.0 × 10¹⁵</td>
 </tr>
 <tr>
 <td>palisades</td>
-<td>~1,467</td>
+<td><strong>~-136</strong></td>
 <td>901</td>
-<td>~8.92 M</td>
-<td>~6.5 × 10¹⁴</td>
+<td>~1,440</td>
+<td>~4.3 × 10¹⁵</td>
 </tr>
 <tr>
 <td>park</td>
-<td>~1,486</td>
+<td>~1,069</td>
 <td>662</td>
-<td>~9.68 M</td>
-<td>~3.2 × 10¹⁴</td>
+<td>~1,008</td>
+<td>~1.1 × 10¹⁵</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Notice:</strong> TEMPO <strong>grid sizes</strong> (pixel
-counts) vary by <strong>granule coverage and warp
-resolution</strong>—check the table column before comparing total kg
-across regions. Mass always runs over <strong>whatever pixels exist in
-that GeoTIFF</strong>.</p>
+<p><strong>Notice:</strong> In the current pipeline, TEMPO is
+<strong>subset to the Planet scene bounds</strong>, so the “TEMPO grid”
+in this table is a <strong>small window</strong> of the full warped
+TEMPO GeoTIFF. Mass always runs over <strong>whatever pixels exist in
+that window</strong>.</p>
 <h3
 id="cross-region-comparison-plots-from-the-batch-summaries">Cross-region
 comparison plots (from the batch summaries)</h3>
@@ -409,7 +409,7 @@ href="#commands-if-you-want-to-reproduce-visuals">Commands</a>).</p>
 </tbody>
 </table>
 <p>airport histograms</p>
-<p><em>~1,540 kg total excess NO₂; 470 coarse pixels with f_p &gt; 0.01
+<p><em>~766 kg total excess NO₂; 470 coarse pixels with f_p &gt; 0.01
 (see table above).</em></p>
 <h4 id="bridge">Bridge</h4>
 <p><strong>Note:</strong> Bridge needed <strong>Planet surface
@@ -432,7 +432,7 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 </tbody>
 </table>
 <p>bridge histograms</p>
-<p><em>~4,001 kg; 532 plume-ish pixels after the SR fix.</em></p>
+<p><em>~769 kg; 536 plume-ish pixels after the SR fix.</em></p>
 <h4 id="eaton">Eaton</h4>
 <table>
 <thead>
@@ -449,8 +449,9 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 </tbody>
 </table>
 <p>eaton histograms</p>
-<p><em>~1,702 kg; <strong>840</strong> plume-ish pixels—many flagged
-cells, not necessarily the highest total kg.</em></p>
+<p><em>~-1,568 kg; <strong>840</strong> plume-ish pixels—negative totals
+can happen with background subtraction over the Planet-bounded
+window.</em></p>
 <h4 id="line">Line</h4>
 <table>
 <thead>
@@ -467,9 +468,8 @@ cells, not necessarily the highest total kg.</em></p>
 </tbody>
 </table>
 <p>line histograms</p>
-<p><em>~2,769 kg with <strong>433</strong> plume-ish
-pixels—<strong>column strength</strong> can outweigh raw pixel
-count.</em></p>
+<p><em>~432 kg with <strong>433</strong> plume-ish pixels—<strong>column
+strength</strong> can outweigh raw pixel count.</em></p>
 <h4 id="palisades">Palisades</h4>
 <table>
 <thead>
@@ -486,10 +486,9 @@ count.</em></p>
 </tbody>
 </table>
 <p>palisades histograms</p>
-<p><em>~1,467 kg with <strong>901</strong> plume-ish pixels in this
-batch—<strong>signal per cell</strong> and <strong>swath
-footprint</strong> still matter more than the row in the table
-alone.</em></p>
+<p><em>~-136 kg with <strong>901</strong> plume-ish pixels in this
+batch—negative totals can happen with background subtraction over the
+Planet-bounded window.</em></p>
 <h4 id="park">Park</h4>
 <table>
 <thead>
@@ -506,7 +505,7 @@ alone.</em></p>
 </tbody>
 </table>
 <p>park histograms</p>
-<p><em>~1,486 kg; 662 plume-ish pixels.</em></p>
+<p><em>~1,069 kg; 662 plume-ish pixels.</em></p>
 <h3 id="eli5-contrasts-scientifically-honest">ELI5 contrasts
 (scientifically honest)</h3>
 <ul>
@@ -514,11 +513,10 @@ alone.</em></p>
 kg</strong> with <strong>fewer</strong> “smoky” coarse pixels than
 eaton—because <strong>column strength</strong> matters as much as
 <strong>how many</strong> cells pass the f_p threshold.</li>
-<li><strong>Palisades vs. park:</strong> Total kg can land in a
-<strong>similar band</strong> with <strong>different</strong>
-plume-pixel counts—<strong>column strength</strong> and
-<strong>where</strong> f_p lines up with ΔVCD still dominate over a
-simple pixel tally.</li>
+<li><strong>Palisades vs. park:</strong> Total kg can differ in
+<strong>sign and magnitude</strong> depending on the window and
+background—this is why it’s important to keep the <strong>domain
+policy</strong> consistent when comparing cases.</li>
 <li><strong>Bridge:</strong> After switching to <strong>surface
 reflectance</strong>, the mask finally “sees” smoke on the TEMPO grid;
 before that, the pipeline could report <strong>~0</strong> not because
@@ -868,6 +866,15 @@ mass.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="domain-policy-important-for-interpretation">Domain policy
+(important for interpretation)</h3>
+<p>The current repository policy is to <strong>subset the TEMPO GeoTIFF
+to the Planet scene bounds</strong> before computing: - plume fraction
+(f_p), - background (VCD_{bg}), - excess column ΔVCD, - integrated
+mass.</p>
+<p>This avoids treating “no Planet coverage” as “clear” in low-(f_p)
+background selection. The subset is a <strong>window on the warped TEMPO
+GeoTIFF</strong>, not a re-warp of the NetCDF.</p>
 <h3 id="vertical-column-interpretation">Vertical column
 interpretation</h3>
 <table>

@@ -18,7 +18,10 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
+from rasterio.windows import Window
+from rasterio.windows import from_bounds as window_from_bounds
 from rasterio.warp import Resampling, reproject
+from rasterio.warp import transform_bounds
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLANET = (
@@ -176,6 +179,55 @@ def load_tempo_vcd(path: Path, band: int = 1) -> tuple[np.ndarray, rasterio.Data
     return arr, ds
 
 
+def _clip_window_to_dataset(ds: rasterio.DatasetReader, w: Window) -> Window:
+    """Clamp a window to dataset bounds (integer pixels)."""
+    w2 = w.round_offsets().round_lengths()
+    col_off = max(0, int(w2.col_off))
+    row_off = max(0, int(w2.row_off))
+    col_end = min(ds.width, col_off + int(w2.width))
+    row_end = min(ds.height, row_off + int(w2.height))
+    width = max(0, col_end - col_off)
+    height = max(0, row_end - row_off)
+    return Window(col_off, row_off, width, height)
+
+
+def tempo_window_for_planet_bounds(
+    planet_ds: rasterio.DatasetReader,
+    tempo_ds: rasterio.DatasetReader,
+    *,
+    pad_pixels: int = 1,
+) -> Window:
+    """
+    Window TEMPO to Planet scene bounds (in TEMPO CRS).
+
+    Policy: compute f_p, background, ΔVCD, and mass only where Planet was observed, to avoid
+    treating "no Planet coverage" as "clear" (f_p=0).
+    """
+    pb = planet_ds.bounds
+    west, south, east, north = transform_bounds(
+        planet_ds.crs,
+        tempo_ds.crs,
+        pb.left,
+        pb.bottom,
+        pb.right,
+        pb.top,
+        densify_pts=21,
+    )
+    w = window_from_bounds(west, south, east, north, transform=tempo_ds.transform)
+    w = _clip_window_to_dataset(tempo_ds, w)
+    if w.width <= 0 or w.height <= 0:
+        raise ValueError("Planet bounds do not overlap TEMPO raster extent.")
+    if pad_pixels > 0:
+        w = Window(
+            max(0, int(w.col_off) - pad_pixels),
+            max(0, int(w.row_off) - pad_pixels),
+            int(w.width) + 2 * pad_pixels,
+            int(w.height) + 2 * pad_pixels,
+        )
+        w = _clip_window_to_dataset(tempo_ds, w)
+    return w
+
+
 def reproject_mask_to_tempo(
     planet_ds: rasterio.DatasetReader,
     mask_01_or_nodata: np.ndarray,
@@ -191,6 +243,32 @@ def reproject_mask_to_tempo(
         src_transform=planet_ds.transform,
         src_crs=planet_ds.crs,
         dst_transform=tempo_ds.transform,
+        dst_crs=tempo_ds.crs,
+        resampling=Resampling.average,
+        src_nodata=src_nodata,
+    )
+    return np.clip(dst, 0.0, 1.0)
+
+
+def reproject_mask_to_tempo_window(
+    planet_ds: rasterio.DatasetReader,
+    mask_01_or_nodata: np.ndarray,
+    tempo_ds: rasterio.DatasetReader,
+    window: Window,
+    *,
+    src_nodata: float = MASK_NODATA_OUT,
+) -> np.ndarray:
+    """Average sub-pixel smoke fraction onto a TEMPO window (Planet-bounds subset)."""
+    if window.width <= 0 or window.height <= 0:
+        raise ValueError("Invalid TEMPO window for f_p.")
+    dst = np.zeros((int(window.height), int(window.width)), dtype=np.float32)
+    dst_transform = rasterio.windows.transform(window, tempo_ds.transform)
+    reproject(
+        source=np.asarray(mask_01_or_nodata, dtype=np.float32),
+        destination=dst,
+        src_transform=planet_ds.transform,
+        src_crs=planet_ds.crs,
+        dst_transform=dst_transform,
         dst_crs=tempo_ds.crs,
         resampling=Resampling.average,
         src_nodata=src_nodata,
@@ -240,10 +318,14 @@ def run(
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    vcd, tempo_ds = load_tempo_vcd(tempo_path, band=tempo_vcd_band)
-    h, w = vcd.shape
+    with rasterio.open(tempo_path) as tempo_ds, rasterio.open(planet_path) as planet_ds:
+        tw = tempo_window_for_planet_bounds(planet_ds, tempo_ds, pad_pixels=1)
+        vcd = tempo_ds.read(tempo_vcd_band, window=tw).astype(np.float64)
+        nodata = tempo_ds.nodata
+        if nodata is not None:
+            vcd = np.where(vcd == nodata, np.nan, vcd)
+        h, w = vcd.shape
 
-    with rasterio.open(planet_path) as planet_ds:
         need = max(band_blue, band_nir)
         if mask_method.lower().strip() in ("ndhi", "ndhi_green_blue"):
             need = max(need, band_green)
@@ -274,9 +356,11 @@ def run(
             ndhi_bnir_smoke_above=ndhi_bnir_smoke_above,
             mask_nodata=mask_nodata,
         )
-        f_p = reproject_mask_to_tempo(
-            planet_ds, mask_01, tempo_ds, src_nodata=mask_nodata
+        f_p = reproject_mask_to_tempo_window(
+            planet_ds, mask_01, tempo_ds, tw, src_nodata=mask_nodata
         )
+        tempo_profile = tempo_ds.profile.copy()
+        tempo_transform = rasterio.windows.transform(tw, tempo_ds.transform)
 
     # Finite tropospheric VCD only; negatives are allowed (TEMPO user guide). QA/cloud live in the GeoTIFF from tempo_l2_to_4326.py.
     valid = np.isfinite(vcd)
@@ -291,7 +375,7 @@ def run(
     delta = np.where(valid, vcd - vcd_bg, np.nan)
     delta_plume = f_p.astype(np.float64) * delta
 
-    area = _pixel_areas_m2(tempo_ds.transform, h, w)
+    area = _pixel_areas_m2(tempo_transform, h, w)
     if vcd_units == "molec_cm2":
         mass_kg = excess_mass_molec_cm2(delta_plume, area)
     elif vcd_units == "mol_m2":
@@ -303,6 +387,7 @@ def run(
     summary = {
         "time_match": time_match if time_match is not None else DEFAULT_TIME_MATCH,
         "inputs": {"planet": str(planet_path), "tempo": str(tempo_path)},
+        "domain_policy": "TEMPO is subset to Planet scene bounds (windowed) before f_p, background, ΔVCD, and mass.",
         "parameters": {
             "vcd_units": vcd_units,
             "mask_method": mask_method,
@@ -346,9 +431,18 @@ def run(
             f.write(f"\"{r['quantity']}\",{r['value']},{r['units']}\n")
 
     if write_maps:
-        profile = tempo_ds.profile.copy()
-        profile.update(dtype=rasterio.float32, count=1, compress="deflate")
-        nd = tempo_ds.nodata if tempo_ds.nodata is not None else -9999.0
+        profile = tempo_profile.copy()
+        profile.update(
+            dtype=rasterio.float32,
+            count=1,
+            compress="deflate",
+            height=h,
+            width=w,
+            transform=tempo_transform,
+        )
+        nd = tempo_profile.get("nodata")
+        if nd is None:
+            nd = -9999.0
         with rasterio.open(out_dir / "f_p.tif", "w", **profile) as dst:
             dst.write(f_p.astype(np.float32), 1)
             dst.set_band_description(1, "f_p sub-pixel smoke fraction on TEMPO grid")
@@ -360,8 +454,6 @@ def run(
         with rasterio.open(out_dir / "delta_vcd_plume.tif", "w", **profile) as dst:
             dst.write(np.where(np.isfinite(delta_plume), delta_plume, nd).astype(np.float32), 1)
             dst.set_band_description(1, "f_p * delta VCD (plume-weighted excess column)")
-
-    tempo_ds.close()
     return summary
 
 

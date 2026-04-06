@@ -46,6 +46,16 @@ Changing an **earlier** step’s outputs (especially TEMPO VCD or Planet scene) 
 | `--tempo` | Pilot warped GeoTIFF | **Different VCD grid** → new background, ΔVCD, mass. |
 | `--out` | `results/smoke_plume` | Output folder only (does not change math). |
 
+### Domain policy (important for interpretation)
+
+The current repository policy is to **subset the TEMPO GeoTIFF to the Planet scene bounds** before computing:
+- plume fraction \(f_p\),
+- background \(VCD_{bg}\),
+- excess column ΔVCD,
+- integrated mass.
+
+This avoids treating “no Planet coverage” as “clear” in low-\(f_p\) background selection. The subset is a **window on the warped TEMPO GeoTIFF**, not a re-warp of the NetCDF.
+
 ### Vertical column interpretation
 
 | Parameter | Default | Effect |

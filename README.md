@@ -35,6 +35,8 @@ py -3 scripts/smoke_plume_sanity_check.py
 
 `tempo_l2_to_4326.py` defaults: **`main_data_quality_flag == 0`**, mask **`eff_cloud_fraction` > 0.2**, tropospheric VCD **may be negative** (not stripped before gridding). Use **`--no-cloud-mask`** only if you need to skip cloud screening.
 
+`smoke_plume_pipeline.py` domain policy: TEMPO is **subset to the Planet scene bounds** before computing \(f_p\), background, ΔVCD, and mass (so missing Planet coverage is not treated as clear sky).
+
 Batch (six regions under `smoke-plume-data/`, each with `case.json`):
 
 ```powershell

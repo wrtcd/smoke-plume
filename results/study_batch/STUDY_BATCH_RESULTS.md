@@ -1,11 +1,12 @@
 # Study batch — smoke plume NO₂ pipeline results
 
-Report generated: **2026-04-06** (full regeneration after TEMPO preprocessing policy: `main_data_quality_flag == 0`, **`eff_cloud_fraction` ≤ 0.2**, tropospheric VCD retained including **negative** values where valid; see `scripts/tempo_l2_to_4326.py` and `scripts/smoke_plume_pipeline.py`).
+Report generated: **2026-04-06** (full regeneration).
 
 ## What was run
 
-- **TEMPO L2 → GeoTIFF:** `scripts/tempo_l2_to_4326.py` per region (default **`--max-cloud 0.2`**; no extra cloud flags). Each study folder’s granule was warped to `tempo/TEMPO_NO2_trop_warped_4326.tif` (overwritten).
+- **TEMPO L2 → GeoTIFF:** `scripts/tempo_l2_to_4326.py` per region (default **`--max-cloud 0.2`**). Each study folder’s granule was warped to `tempo/TEMPO_NO2_trop_warped_4326.tif` (overwritten).
 - **Main pipeline:** `scripts/smoke_plume_pipeline.py` via `scripts/run_all_cases.py` (`mask_method=blue_nir`, `blue_nir_max=0.42`, `fp_background_max=0.02`, TEMPO VCD units `molec_cm2`, bands Blue=2 / NIR=8).
+- **Domain policy:** **TEMPO is subset to the Planet scene bounds** (windowed) before computing \(f_p\), background, ΔVCD, and mass.
 - **Regions:** six folders under `smoke-plume-data/` with `case.json`.
 - **Outputs per case:** `results/study_batch/<region>/pipeline_summary.json`, `pipeline_table.csv`, maps (`f_p.tif`, `delta_vcd.tif`, `delta_vcd_plume.tif`), `maps/*.png`, sanity artifacts.
 - **Batch index:** `results/study_batch/batch_summary.json`.
@@ -13,16 +14,20 @@ Report generated: **2026-04-06** (full regeneration after TEMPO preprocessing po
 
 ## Summary table
 
-| Region | Status | Total excess NO₂ (kg) | VCD background median (molec/cm²) | TEMPO pixels | Plume pixels (f_p > 0.01) |
+| Region | Status | Total excess NO₂ (kg) | VCD background median (molec/cm²) | TEMPO pixels (subset) | Plume pixels (f_p > 0.01) |
 |--------|--------|----------------------:|-----------------------------------:|-------------:|-------------------------:|
-| airport | ok | 1,539.92 | 3.81 × 10¹⁴ | 9,312,186 | 470 |
-| bridge | ok | 4,000.93 | 5.00 × 10¹⁴ | 8,550,000 | 532 |
-| eaton | ok | 1,701.86 | 5.72 × 10¹⁴ | 7,941,600 | 840 |
-| line | ok | 2,769.43 | 6.80 × 10¹⁴ | 7,952,400 | 433 |
-| palisades | ok | 1,466.93 | 6.50 × 10¹⁴ | 8,920,800 | 901 |
-| park | ok | 1,485.69 | 3.18 × 10¹⁴ | 9,680,400 | 662 |
+| airport | ok | 765.67 | 4.85 × 10¹⁵ | 1,066 | 470 |
+| bridge | ok | 769.10 | 7.42 × 10¹⁵ | 912 | 536 |
+| eaton | ok | **-1,568.40** | 9.20 × 10¹⁵ | 1,470 | 840 |
+| line | ok | 432.01 | 6.98 × 10¹⁵ | 1,170 | 433 |
+| palisades | ok | **-136.38** | 4.31 × 10¹⁵ | 1,440 | 901 |
+| park | ok | 1,068.92 | 1.14 × 10¹⁵ | 1,008 | 662 |
 
 Values are from each `pipeline_summary.json` under `results/study_batch/<region>/` for this batch.
+
+## Notes on negative totals
+
+With **background subtraction** and allowing **negative** TEMPO tropospheric VCD values, the integrated plume-weighted excess \(\sum f_p \times (VCD - VCD_{bg})\) can be **negative** for a given domain. This indicates that, over the **Planet-bounded subset**, plume-weighted pixels are (on balance) below the estimated background.
 
 ## Plain-English pipeline guide
 

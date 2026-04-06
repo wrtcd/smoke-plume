@@ -22,7 +22,8 @@ from smoke_plume_pipeline import (
     MASK_NODATA_OUT,
     REPO_ROOT,
     compute_smoke_mask_layers,
-    reproject_mask_to_tempo,
+    reproject_mask_to_tempo_window,
+    tempo_window_for_planet_bounds,
 )
 
 DEFAULT_OUT = REPO_ROOT / "results/step_02_plume_mask"
@@ -162,11 +163,20 @@ def main() -> None:
             dst.write(np.clip(mask_prev, 0.0, 1.0), 1)
 
         with rasterio.open(args.tempo) as tempo_ds:
-            f_p = reproject_mask_to_tempo(
-                planet_ds, mask_f, tempo_ds, src_nodata=args.mask_nodata
+            tw = tempo_window_for_planet_bounds(planet_ds, tempo_ds, pad_pixels=1)
+            f_p = reproject_mask_to_tempo_window(
+                planet_ds, mask_f, tempo_ds, tw, src_nodata=args.mask_nodata
             )
             tp = tempo_ds.profile.copy()
-            tp.update(dtype=rasterio.float32, count=1, compress="deflate", nodata=-9999.0)
+            tp.update(
+                dtype=rasterio.float32,
+                count=1,
+                compress="deflate",
+                nodata=-9999.0,
+                height=int(tw.height),
+                width=int(tw.width),
+                transform=rasterio.windows.transform(tw, tempo_ds.transform),
+            )
             with rasterio.open(fp_path, "w", **tp) as dst:
                 dst.write(f_p.astype(np.float32), 1)
                 dst.set_band_description(1, "f_p mean smoke fraction per TEMPO pixel")
@@ -174,6 +184,7 @@ def main() -> None:
                     DESCRIPTION="Sub-pixel plume fraction: Planet smoke mask averaged onto TEMPO grid (0-1).",
                     SOURCE_PLANET=str(args.planet.resolve()),
                     SOURCE_TEMPO=str(args.tempo.resolve()),
+                    DOMAIN_POLICY="TEMPO subset to Planet scene bounds before f_p gridding.",
                     BLUE_NIR_MAX=str(args.blue_nir_max),
                     MASK_METHOD=args.mask_method,
                 )
