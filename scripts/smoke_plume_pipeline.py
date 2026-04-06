@@ -372,8 +372,10 @@ def run(
     else:
         vcd_bg = float(np.nanmedian(vcd[bg_sel]))
 
-    delta = np.where(valid, vcd - vcd_bg, np.nan)
-    delta_plume = f_p.astype(np.float64) * delta
+    delta_signed = np.where(valid, vcd - vcd_bg, np.nan)
+    # Option A: report enhancement above background only (never negative).
+    delta_enh = np.where(np.isfinite(delta_signed), np.maximum(delta_signed, 0.0), np.nan)
+    delta_plume = f_p.astype(np.float64) * delta_enh
 
     area = _pixel_areas_m2(tempo_transform, h, w)
     if vcd_units == "molec_cm2":
@@ -384,6 +386,12 @@ def run(
         raise ValueError(vcd_units)
 
     plume_mask = f_p > 0.01
+    mass_signed_kg = None
+    if vcd_units == "molec_cm2":
+        mass_signed_kg = excess_mass_molec_cm2(f_p.astype(np.float64) * delta_signed, area)
+    elif vcd_units == "mol_m2":
+        mass_signed_kg = excess_mass_mol_m2(f_p.astype(np.float64) * delta_signed, area)
+
     summary = {
         "time_match": time_match if time_match is not None else DEFAULT_TIME_MATCH,
         "inputs": {"planet": str(planet_path), "tempo": str(tempo_path)},
@@ -406,7 +414,8 @@ def run(
         "vcd_background_median": vcd_bg,
         "pixels_tempo": int(h * w),
         "pixels_plume_fp_gt_0.01": int(np.sum(plume_mask)),
-        "total_excess_no2_kg": mass_kg,
+        "total_enhancement_no2_kg": mass_kg,
+        "total_excess_no2_kg_signed": float(mass_signed_kg) if mass_signed_kg is not None else None,
     }
 
     meta_path = out_dir / "pipeline_summary.json"
@@ -419,8 +428,13 @@ def run(
             "units": vcd_units,
         },
         {
-            "quantity": "Sum excess NO2 mass (f_p × (VCD − VCD_bg))",
+            "quantity": "Sum plume enhancement NO2 mass (f_p × max(VCD − VCD_bg, 0))",
             "value": mass_kg,
+            "units": "kg",
+        },
+        {
+            "quantity": "Sum signed plume anomaly (f_p × (VCD − VCD_bg))",
+            "value": float(mass_signed_kg) if mass_signed_kg is not None else float("nan"),
             "units": "kg",
         },
     ]
@@ -448,12 +462,16 @@ def run(
             dst.set_band_description(1, "f_p sub-pixel smoke fraction on TEMPO grid")
         # Step 4: full-field excess column ΔVCD = VCD - VCD_bg (not yet scaled by f_p)
         with rasterio.open(out_dir / "delta_vcd.tif", "w", **profile) as dst:
-            dst.write(np.where(np.isfinite(delta), delta, nd).astype(np.float32), 1)
-            dst.set_band_description(1, "delta VCD = VCD - VCD_bg (all valid TEMPO pixels)")
+            dst.write(np.where(np.isfinite(delta_signed), delta_signed, nd).astype(np.float32), 1)
+            dst.set_band_description(1, "delta VCD = VCD - VCD_bg (signed, all valid TEMPO pixels)")
+        # Enhancement-only excess: max(ΔVCD, 0)
+        with rasterio.open(out_dir / "delta_vcd_enh.tif", "w", **profile) as dst:
+            dst.write(np.where(np.isfinite(delta_enh), delta_enh, nd).astype(np.float32), 1)
+            dst.set_band_description(1, "delta VCD enhancement = max(VCD - VCD_bg, 0)")
         # Plume-attributed excess: f_p * ΔVCD
         with rasterio.open(out_dir / "delta_vcd_plume.tif", "w", **profile) as dst:
             dst.write(np.where(np.isfinite(delta_plume), delta_plume, nd).astype(np.float32), 1)
-            dst.set_band_description(1, "f_p * delta VCD (plume-weighted excess column)")
+            dst.set_band_description(1, "f_p * max(delta VCD, 0) (plume-weighted enhancement)")
     return summary
 
 

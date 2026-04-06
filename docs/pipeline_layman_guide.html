@@ -308,7 +308,7 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 <thead>
 <tr>
 <th>Region</th>
-<th>Total excess NO₂ (kg)</th>
+<th>Total enhancement NO₂ (kg)</th>
 <th>“Smoky” TEMPO pixels (f_p &gt; 0.01)</th>
 <th>TEMPO grid (pixels)</th>
 <th>VCD background median (molec/cm²)</th>
@@ -317,42 +317,42 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 <tbody>
 <tr>
 <td>airport</td>
-<td>~766</td>
+<td>~789</td>
 <td>470</td>
 <td>~1,066</td>
 <td>~4.9 × 10¹⁵</td>
 </tr>
 <tr>
 <td>bridge</td>
-<td>~769</td>
+<td>~1,509</td>
 <td>536</td>
 <td>~912</td>
 <td>~7.4 × 10¹⁵</td>
 </tr>
 <tr>
 <td>eaton</td>
-<td><strong>~-1,568</strong></td>
+<td>~496</td>
 <td>840</td>
 <td>~1,470</td>
 <td>~9.2 × 10¹⁵</td>
 </tr>
 <tr>
 <td>line</td>
-<td>~432</td>
+<td>~1,239</td>
 <td>433</td>
 <td>~1,170</td>
 <td>~7.0 × 10¹⁵</td>
 </tr>
 <tr>
 <td>palisades</td>
-<td><strong>~-136</strong></td>
+<td>~380</td>
 <td>901</td>
 <td>~1,440</td>
 <td>~4.3 × 10¹⁵</td>
 </tr>
 <tr>
 <td>park</td>
-<td>~1,069</td>
+<td>~1,176</td>
 <td>662</td>
 <td>~1,008</td>
 <td>~1.1 × 10¹⁵</td>
@@ -416,8 +416,8 @@ href="#commands-if-you-want-to-reproduce-visuals">Commands</a>).</p>
 </tbody>
 </table>
 <p><img src="images/cases/airport_histograms.png" /></p>
-<p><em>~766 kg total excess NO₂; 470 coarse pixels with f_p &gt; 0.01
-(see table above).</em></p>
+<p><em>~789 kg total enhancement NO₂; 470 coarse pixels with f_p &gt;
+0.01 (see table above).</em></p>
 <h4 id="bridge">Bridge</h4>
 <p><strong>Note:</strong> Bridge needed <strong>Planet surface
 reflectance (SR)</strong> in <code>case.json</code>; the wrong product
@@ -443,7 +443,7 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 </tbody>
 </table>
 <p><img src="images/cases/bridge_histograms.png" /></p>
-<p><em>~769 kg; 536 plume-ish pixels after the SR fix.</em></p>
+<p><em>~1,509 kg; 536 plume-ish pixels after the SR fix.</em></p>
 <h4 id="eaton">Eaton</h4>
 <table>
 <colgroup>
@@ -464,9 +464,8 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 </tbody>
 </table>
 <p><img src="images/cases/eaton_histograms.png" /></p>
-<p><em>~-1,568 kg; <strong>840</strong> plume-ish pixels—negative totals
-can happen with background subtraction over the Planet-bounded
-window.</em></p>
+<p><em>~496 kg; <strong>840</strong> plume-ish pixels (this is
+enhancement-only; signed anomaly can still be negative).</em></p>
 <h4 id="line">Line</h4>
 <table>
 <colgroup>
@@ -487,8 +486,9 @@ window.</em></p>
 </tbody>
 </table>
 <p><img src="images/cases/line_histograms.png" /></p>
-<p><em>~432 kg with <strong>433</strong> plume-ish pixels—<strong>column
-strength</strong> can outweigh raw pixel count.</em></p>
+<p><em>~1,239 kg with <strong>433</strong> plume-ish
+pixels—<strong>column strength</strong> can outweigh raw pixel
+count.</em></p>
 <h4 id="palisades">Palisades</h4>
 <table>
 <colgroup>
@@ -510,9 +510,8 @@ src="images/cases/palisades_delta_vcd_plume_preview.png" /></td>
 </tbody>
 </table>
 <p><img src="images/cases/palisades_histograms.png" /></p>
-<p><em>~-136 kg with <strong>901</strong> plume-ish pixels in this
-batch—negative totals can happen with background subtraction over the
-Planet-bounded window.</em></p>
+<p><em>~380 kg with <strong>901</strong> plume-ish pixels
+(enhancement-only; signed anomaly can still be negative).</em></p>
 <h4 id="park">Park</h4>
 <table>
 <colgroup>
@@ -533,7 +532,7 @@ Planet-bounded window.</em></p>
 </tbody>
 </table>
 <p><img src="images/cases/park_histograms.png" /></p>
-<p><em>~1,069 kg; 662 plume-ish pixels.</em></p>
+<p><em>~1,176 kg; 662 plume-ish pixels.</em></p>
 <h3 id="eli5-contrasts-scientifically-honest">ELI5 contrasts
 (scientifically honest)</h3>
 <ul>

@@ -124,14 +124,14 @@ So: treat this as *one consistent measurement machine pointed at six different w
 These match the study batch documented in [STUDY_BATCH_RESULTS.md](../results/study_batch/STUDY_BATCH_RESULTS.md).
 
 
-| Region    | Total excess NO₂ (kg) | “Smoky” TEMPO pixels (f_p > 0.01) | TEMPO grid (pixels) | VCD background median (molec/cm²) |
+| Region    | Total enhancement NO₂ (kg) | “Smoky” TEMPO pixels (f_p > 0.01) | TEMPO grid (pixels) | VCD background median (molec/cm²) |
 | --------- | --------------------- | --------------------------------- | ------------------- | --------------------------------- |
-| airport   | ~766                  | 470                               | ~1,066              | ~4.9 × 10¹⁵                       |
-| bridge    | ~769                  | 536                               | ~912                | ~7.4 × 10¹⁵                       |
-| eaton     | **~-1,568**           | 840                               | ~1,470              | ~9.2 × 10¹⁵                       |
-| line      | ~432                  | 433                               | ~1,170              | ~7.0 × 10¹⁵                       |
-| palisades | **~-136**             | 901                               | ~1,440              | ~4.3 × 10¹⁵                       |
-| park      | ~1,069                | 662                               | ~1,008              | ~1.1 × 10¹⁵                       |
+| airport   | ~789                  | 470                               | ~1,066              | ~4.9 × 10¹⁵                       |
+| bridge    | ~1,509                | 536                               | ~912                | ~7.4 × 10¹⁵                       |
+| eaton     | ~496                  | 840                               | ~1,470              | ~9.2 × 10¹⁵                       |
+| line      | ~1,239                | 433                               | ~1,170              | ~7.0 × 10¹⁵                       |
+| palisades | ~380                  | 901                               | ~1,440              | ~4.3 × 10¹⁵                       |
+| park      | ~1,176                | 662                               | ~1,008              | ~1.1 × 10¹⁵                       |
 
 
 **Notice:** In the current pipeline, TEMPO is **subset to the Planet scene bounds**, so the “TEMPO grid” in this table is a **small window** of the full warped TEMPO GeoTIFF. Mass always runs over **whatever pixels exist in that window**.
@@ -170,7 +170,7 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 ![](images/cases/airport_histograms.png)
 
-*~766 kg total excess NO₂; 470 coarse pixels with f_p > 0.01 (see table above).*
+*~789 kg total enhancement NO₂; 470 coarse pixels with f_p > 0.01 (see table above).*
 
 #### Bridge
 
@@ -184,7 +184,7 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 ![](images/cases/bridge_histograms.png)
 
-*~769 kg; 536 plume-ish pixels after the SR fix.*
+*~1,509 kg; 536 plume-ish pixels after the SR fix.*
 
 #### Eaton
 
@@ -196,7 +196,7 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 ![](images/cases/eaton_histograms.png)
 
-*~-1,568 kg; **840** plume-ish pixels—negative totals can happen with background subtraction over the Planet-bounded window.*
+*~496 kg; **840** plume-ish pixels (this is enhancement-only; signed anomaly can still be negative).*
 
 #### Line
 
@@ -208,7 +208,7 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 ![](images/cases/line_histograms.png)
 
-*~432 kg with **433** plume-ish pixels—**column strength** can outweigh raw pixel count.*
+*~1,239 kg with **433** plume-ish pixels—**column strength** can outweigh raw pixel count.*
 
 #### Palisades
 
@@ -220,7 +220,7 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 ![](images/cases/palisades_histograms.png)
 
-*~-136 kg with **901** plume-ish pixels in this batch—negative totals can happen with background subtraction over the Planet-bounded window.*
+*~380 kg with **901** plume-ish pixels (enhancement-only; signed anomaly can still be negative).*
 
 #### Park
 
@@ -232,7 +232,7 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 ![](images/cases/park_histograms.png)
 
-*~1,069 kg; 662 plume-ish pixels.*
+*~1,176 kg; 662 plume-ish pixels.*
 
 ### ELI5 contrasts (scientifically honest)
 

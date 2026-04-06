@@ -238,7 +238,10 @@ def main() -> None:
                 time_match=time_match,
             )
             row["status"] = "ok"
-            row["total_excess_no2_kg"] = summary.get("total_excess_no2_kg")
+            row["total_enhancement_no2_kg"] = summary.get(
+                "total_enhancement_no2_kg", summary.get("total_excess_no2_kg")
+            )
+            row["total_excess_no2_kg_signed"] = summary.get("total_excess_no2_kg_signed")
             row["vcd_background_median"] = summary.get("vcd_background_median")
         except Exception as e:
             row["status"] = "error"

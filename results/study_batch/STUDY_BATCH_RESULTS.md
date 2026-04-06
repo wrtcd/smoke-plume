@@ -14,20 +14,21 @@ Report generated: **2026-04-06** (full regeneration).
 
 ## Summary table
 
-| Region | Status | Total excess NO₂ (kg) | VCD background median (molec/cm²) | TEMPO pixels (subset) | Plume pixels (f_p > 0.01) |
+| Region | Status | Total enhancement NO₂ (kg) | Signed plume anomaly (kg) | VCD background median (molec/cm²) | TEMPO pixels (subset) | Plume pixels (f_p > 0.01) |
 |--------|--------|----------------------:|-----------------------------------:|-------------:|-------------------------:|
-| airport | ok | 765.67 | 4.85 × 10¹⁵ | 1,066 | 470 |
-| bridge | ok | 769.10 | 7.42 × 10¹⁵ | 912 | 536 |
-| eaton | ok | **-1,568.40** | 9.20 × 10¹⁵ | 1,470 | 840 |
-| line | ok | 432.01 | 6.98 × 10¹⁵ | 1,170 | 433 |
-| palisades | ok | **-136.38** | 4.31 × 10¹⁵ | 1,440 | 901 |
-| park | ok | 1,068.92 | 1.14 × 10¹⁵ | 1,008 | 662 |
+| airport | ok | 788.50 | 765.67 | 4.85 × 10¹⁵ | 1,066 | 470 |
+| bridge | ok | 1,509.39 | 769.10 | 7.42 × 10¹⁵ | 912 | 536 |
+| eaton | ok | 495.89 | **-1,568.40** | 9.20 × 10¹⁵ | 1,470 | 840 |
+| line | ok | 1,238.90 | 432.01 | 6.98 × 10¹⁵ | 1,170 | 433 |
+| palisades | ok | 379.56 | **-136.38** | 4.31 × 10¹⁵ | 1,440 | 901 |
+| park | ok | 1,175.68 | 1,068.92 | 1.14 × 10¹⁵ | 1,008 | 662 |
 
 Values are from each `pipeline_summary.json` under `results/study_batch/<region>/` for this batch.
 
-## Notes on negative totals
+## Notes on sign vs. enhancement
 
-With **background subtraction** and allowing **negative** TEMPO tropospheric VCD values, the integrated plume-weighted excess \(\sum f_p \times (VCD - VCD_{bg})\) can be **negative** for a given domain. This indicates that, over the **Planet-bounded subset**, plume-weighted pixels are (on balance) below the estimated background.
+- **Total enhancement NO₂ (kg)** is computed with \(\max(VCD - VCD_{bg}, 0)\), so it is **never negative** and is usually the easiest number to communicate.
+- **Signed plume anomaly (kg)** is still computed as \(\sum f_p \times (VCD - VCD_{bg})\) for diagnostics and can be **negative**.
 
 ## Plain-English pipeline guide
 

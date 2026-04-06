@@ -18,7 +18,7 @@ STUDY_ROOT = REPO_ROOT / "results" / "study_batch"
 
 # Fallback if local pipeline outputs are missing (matches STUDY_BATCH_RESULTS.md study batch).
 DEFAULT_CASES: list[tuple[str, float, int, int]] = [
-    # id, total_excess_no2_kg, pixels_plume_fp_gt_0.01, pixels_tempo
+    # id, total_enhancement_no2_kg, pixels_plume_fp_gt_0.01, pixels_tempo
     ("airport", 1515.4887188151129, 467, 9640800),
     ("bridge", 3986.600514391332, 534, 8874000),
     ("eaton", 1957.2485020409267, 845, 8035200),
@@ -42,8 +42,13 @@ def _load_from_disk() -> list[tuple[str, float, int, int]] | None:
             data = json.loads(p.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
-        tid = str(data.get("inputs", {}).get("planet", sub.name))
-        mass = float(data["total_excess_no2_kg"])
+        if "total_enhancement_no2_kg" in data:
+            mass = float(data["total_enhancement_no2_kg"])
+        elif "total_excess_no2_kg" in data:
+            mass = float(data["total_excess_no2_kg"])
+        else:
+            # Back-compat: if only signed anomaly exists, plot its magnitude.
+            mass = abs(float(data.get("total_excess_no2_kg_signed", 0.0)))
         np_p = int(data["pixels_plume_fp_gt_0.01"])
         np_t = int(data["pixels_tempo"])
         rows.append((sub.name, mass, np_p, np_t))

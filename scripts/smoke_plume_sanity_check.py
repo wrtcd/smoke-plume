@@ -66,14 +66,13 @@ def main() -> None:
 
     checks: dict[str, bool | str] = {}
 
-    mass = summary.get("total_excess_no2_kg")
+    mass = summary.get("total_enhancement_no2_kg", summary.get("total_excess_no2_kg"))
     vcd_bg = summary.get("vcd_background_median")
     n_plume = summary.get("pixels_plume_fp_gt_0.01")
     n_pix = summary.get("pixels_tempo")
 
     checks["total_mass_finite"] = bool(mass is not None and np.isfinite(mass))
-    # With background subtraction and allowed negative VCD, integrated plume-weighted excess can be negative.
-    checks["total_mass_sign_reported"] = bool(mass is not None and np.isfinite(mass))
+    checks["total_mass_non_negative"] = bool(mass is not None and np.isfinite(mass) and mass >= 0)
     checks["plume_pixels_gt_0"] = bool(n_plume is not None and n_plume > 0)
 
     # molec/cm^2: typical ambient NO2 columns often ~1e15 +/-; flag only extreme orders
