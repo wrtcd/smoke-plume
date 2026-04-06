@@ -101,9 +101,9 @@ reference</h1>
 pipeline — a plain-English guide</h1>
 <p>This page explains <strong>what the code is doing</strong> and
 <strong>why</strong>, without assuming you speak remote-sensing jargon.
-<strong>Figures below are stored under <a
-href="images/"><code>docs/images/</code></a></strong> (committed in git)
-so they show in GitHub, VS Code / Cursor Markdown Preview, and other
+<strong>Figures below are stored under
+<code>[docs/images/](images/)</code></strong> (committed in git) so they
+show in GitHub, VS Code / Cursor Markdown Preview, and other
 renderers—open this file from the repo so relative image paths
 resolve.</p>
 <p>For math and symbols, see <a href="../PROJECT.md">PROJECT.md</a>.
@@ -111,8 +111,8 @@ resolve.</p>
 pipeline scripts) lives in <a
 href="pipeline_tuning_parameters.md">pipeline_tuning_parameters.md</a>.
 A <strong>single PDF or HTML</strong> that merges this guide with that
-full tuning reference is built by <a
-href="../scripts/build_pipeline_guide_pdf.py"><code>scripts/build_pipeline_guide_pdf.py</code></a>
+full tuning reference is built by
+<code>[scripts/build_pipeline_guide_pdf.py](../scripts/build_pipeline_guide_pdf.py)</code>
 (outputs <code>docs/pipeline_layman_guide.pdf</code> and
 <code>docs/pipeline_layman_guide.html</code>).</p>
 <hr />
@@ -126,9 +126,9 @@ plume—stated as a <strong>mass in kilograms</strong>—after subtracting a
 <h2 id="two-satellites-two-jobs">Two satellites, two jobs</h2>
 <table>
 <colgroup>
-<col style="width: 4%" />
-<col style="width: 42%" />
-<col style="width: 53%" />
+<col style="width: 13%" />
+<col style="width: 34%" />
+<col style="width: 52%" />
 </colgroup>
 <thead>
 <tr>
@@ -196,12 +196,8 @@ inside, what fraction looked like smoke?</em> That fraction is called
 <strong>no smoke</strong> in it (according to Planet). If <strong>f_p =
 0.3</strong>, roughly <strong>30%</strong> of that cell “looks like
 smoke” at Planet resolution.</p>
-<figure>
-<img src="images/schematic_fine_vs_coarse.png"
-alt="Schematic: fine Planet grid averaged into coarse TEMPO cells (f_p)" />
-<figcaption aria-hidden="true">Schematic: fine Planet grid averaged into
-coarse TEMPO cells (f_p)</figcaption>
-</figure>
+<p>Schematic: fine Planet grid averaged into coarse TEMPO cells
+(f_p)</p>
 <p><em>Figure: same idea at two scales—the fine “smoke” map is averaged
 into each big TEMPO pixel to get <strong>f_p</strong>.</em></p>
 <h3 id="step-4-subtract-normal-no₂-background">Step 4 — Subtract
@@ -213,12 +209,7 @@ are <strong>clean in the Planet sense</strong> (low
 <p><strong>excess column ≈ total column − background</strong></p>
 <p>So we focus on <strong>extra</strong> NO₂, not the absolute number on
 a smoggy day.</p>
-<figure>
-<img src="images/schematic_background_subtraction.png"
-alt="Schematic: total column, background, and excess" />
-<figcaption aria-hidden="true">Schematic: total column, background, and
-excess</figcaption>
-</figure>
+<p>Schematic: total column, background, and excess</p>
 <p><em>Figure: we only keep the <strong>excess</strong> above a
 background estimated from low-<strong>f_p</strong> pixels.</em></p>
 <h3 id="step-5-combine-and-add-up-to-kilograms">Step 5 — Combine and add
@@ -231,12 +222,7 @@ TEMPO pixel and sum over the grid. Unit conversions turn
 <strong>molecules per cm²</strong> into <strong>kilograms of
 NO₂</strong>—that’s the <strong>total excess NO₂ (kg)</strong> in
 <code>pipeline_summary.json</code>.</p>
-<figure>
-<img src="images/schematic_pipeline_strip.png"
-alt="Schematic: f_p, excess column, and integration to kg" />
-<figcaption aria-hidden="true">Schematic: f_p, excess column, and
-integration to kg</figcaption>
-</figure>
+<p>Schematic: f_p, excess column, and integration to kg</p>
 <p><em>Figure: multiply overlap by excess column, then sum over the grid
 with pixel area to get <strong>kg</strong>.</em></p>
 <hr />
@@ -263,9 +249,9 @@ granules</strong>.</p>
 “sticks”)</h3>
 <table>
 <colgroup>
-<col style="width: 12%" />
-<col style="width: 32%" />
-<col style="width: 56%" />
+<col style="width: 6%" />
+<col style="width: 38%" />
+<col style="width: 54%" />
 </colgroup>
 <thead>
 <tr>
@@ -308,73 +294,73 @@ scores.”</p>
 (one batch, same defaults)</h3>
 <p>These match the study batch documented in <a
 href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.</p>
-<table>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 6%" />
+<col style="width: 7%" />
 <col style="width: 18%" />
 <col style="width: 28%" />
 <col style="width: 16%" />
-<col style="width: 30%" />
+<col style="width: 28%" />
 </colgroup>
 <thead>
 <tr>
 <th>Region</th>
-<th style="text-align: right;">Total excess NO₂ (kg)</th>
-<th style="text-align: right;">“Smoky” TEMPO pixels (f_p &gt; 0.01)</th>
-<th style="text-align: right;">TEMPO grid (pixels)</th>
-<th style="text-align: right;">VCD background median (molec/cm²)</th>
+<th>Total excess NO₂ (kg)</th>
+<th>“Smoky” TEMPO pixels (f_p &gt; 0.01)</th>
+<th>TEMPO grid (pixels)</th>
+<th>VCD background median (molec/cm²)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>airport</td>
-<td style="text-align: right;">1,515</td>
-<td style="text-align: right;">467</td>
-<td style="text-align: right;">~9.64 M</td>
-<td style="text-align: right;">~5.5 × 10¹⁴</td>
+<td>~1,540</td>
+<td>470</td>
+<td>~9.31 M</td>
+<td>~3.8 × 10¹⁴</td>
 </tr>
 <tr>
 <td>bridge</td>
-<td style="text-align: right;">3,987</td>
-<td style="text-align: right;">534</td>
-<td style="text-align: right;">~8.87 M</td>
-<td style="text-align: right;">~8.3 × 10¹⁴</td>
+<td>~4,001</td>
+<td>532</td>
+<td>~8.55 M</td>
+<td>~5.0 × 10¹⁴</td>
 </tr>
 <tr>
 <td>eaton</td>
-<td style="text-align: right;">1,957</td>
-<td style="text-align: right;">845</td>
-<td style="text-align: right;">~8.04 M</td>
-<td style="text-align: right;">~6.7 × 10¹⁴</td>
+<td>~1,702</td>
+<td>840</td>
+<td>~7.94 M</td>
+<td>~5.7 × 10¹⁴</td>
 </tr>
 <tr>
 <td>line</td>
-<td style="text-align: right;">2,832</td>
-<td style="text-align: right;">433</td>
-<td style="text-align: right;">~8.22 M</td>
-<td style="text-align: right;">~6.9 × 10¹⁴</td>
+<td>~2,769</td>
+<td>433</td>
+<td>~7.95 M</td>
+<td>~6.8 × 10¹⁴</td>
 </tr>
 <tr>
 <td>palisades</td>
-<td style="text-align: right;">1,375</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: right;"><strong>~2.10 M</strong></td>
-<td style="text-align: right;">~9.2 × 10¹⁴</td>
+<td>~1,467</td>
+<td>901</td>
+<td>~8.92 M</td>
+<td>~6.5 × 10¹⁴</td>
 </tr>
 <tr>
 <td>park</td>
-<td style="text-align: right;">1,238</td>
-<td style="text-align: right;">649</td>
-<td style="text-align: right;">~9.31 M</td>
-<td style="text-align: right;">~5.9 × 10¹⁴</td>
+<td>~1,486</td>
+<td>662</td>
+<td>~9.68 M</td>
+<td>~3.2 × 10¹⁴</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Notice:</strong> <strong>Palisades</strong> sits on a
-<strong>much smaller TEMPO grid</strong> (fewer rows/columns in the
-file) than the others—a <strong>file footprint / swath</strong> effect,
-not “a smaller fire.” The mass sum always runs over <strong>whatever
-pixels exist in that GeoTIFF</strong>.</p>
+<p><strong>Notice:</strong> TEMPO <strong>grid sizes</strong> (pixel
+counts) vary by <strong>granule coverage and warp
+resolution</strong>—check the table column before comparing total kg
+across regions. Mass always runs over <strong>whatever pixels exist in
+that GeoTIFF</strong>.</p>
 <h3
 id="cross-region-comparison-plots-from-the-batch-summaries">Cross-region
 comparison plots (from the batch summaries)</h3>
@@ -383,34 +369,19 @@ comparison plots (from the batch summaries)</h3>
 this guide as PNGs. They help you compare regions
 <strong>without</strong> treating the table as a simple leaderboard.</p>
 <p><strong>1 — Total kg, plume-pixel count, and grid size</strong></p>
-<figure>
-<img src="images/case_study_six_way_bars.png"
-alt="Bar charts: mass, plume pixels, grid size for six regions" />
-<figcaption aria-hidden="true">Bar charts: mass, plume pixels, grid size
-for six regions</figcaption>
-</figure>
+<p>Bar charts: mass, plume pixels, grid size for six regions</p>
 <p><strong>2 — Mass vs. count of “plume-ish” pixels</strong></p>
 <p>If high mass always came from “more plume pixels,” points would hug a
 neat line. They don’t—<strong>a few pixels with huge excess
 column</strong> can rival <strong>many pixels with modest
 excess</strong>.</p>
-<figure>
-<img src="images/case_study_mass_vs_plume_scatter.png"
-alt="Scatter: mass vs plume pixel count" />
-<figcaption aria-hidden="true">Scatter: mass vs plume pixel
-count</figcaption>
-</figure>
+<p>Scatter: mass vs plume pixel count</p>
 <p><strong>3 — Rough “kg per plume-ish pixel” (ranked)</strong></p>
 <p>This is <strong>not</strong> a physical emission factor—it’s a
 <strong>cartoon ratio</strong> for intuition (Palisades often stands out
 when <strong>few</strong> cells carry <strong>most</strong> of the
 signal).</p>
-<figure>
-<img src="images/case_study_kg_per_plume_pixel.png"
-alt="Bar: kg per plume pixel (ranked)" />
-<figcaption aria-hidden="true">Bar: kg per plume pixel
-(ranked)</figcaption>
-</figure>
+<p>Bar: kg per plume pixel (ranked)</p>
 <h3 id="case-by-case-maps-cropped-previews">Case-by-case maps (cropped
 previews)</h3>
 <p>For <strong>each</strong> study region, the pipeline exports
@@ -418,40 +389,27 @@ previews)</h3>
 (how smoky each big TEMPO cell is) and <strong>f_p × ΔNO₂</strong>
 (plume-weighted excess). Below that, <strong>histograms</strong> show
 how <strong>f_p</strong> and plume ΔNO₂ are distributed when <strong>f_p
-&gt; 0.01</strong>. These copies live under <a
-href="images/cases/"><code>docs/images/cases/</code></a> so you can read
-this guide offline or on GitHub; refresh them after regenerating maps
-(see <a
+&gt; 0.01</strong>. These copies live under
+<code>[docs/images/cases/](images/cases/)</code> so you can read this
+guide offline or on GitHub; refresh them after regenerating maps (see <a
 href="#commands-if-you-want-to-reproduce-visuals">Commands</a>).</p>
 <h4 id="airport">Airport</h4>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
-<th style="text-align: center;">Plume overlap <strong>f_p</strong></th>
-<th style="text-align: center;">Plume-weighted excess <strong>f_p ×
-ΔNO₂</strong></th>
+<th>Plume overlap <strong>f_p</strong></th>
+<th>Plume-weighted excess <strong>f_p × ΔNO₂</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;"><img
-src="images/cases/airport_f_p_preview.png" alt="airport f_p" /></td>
-<td style="text-align: center;"><img
-src="images/cases/airport_delta_vcd_plume_preview.png"
-alt="airport plume delta" /></td>
+<td>airport f_p</td>
+<td>airport plume delta</td>
 </tr>
 </tbody>
 </table>
-<figure>
-<img src="images/cases/airport_histograms.png"
-alt="airport histograms" />
-<figcaption aria-hidden="true">airport histograms</figcaption>
-</figure>
-<p><em>~1,515 kg total excess NO₂; 467 coarse pixels with f_p &gt; 0.01
+<p>airport histograms</p>
+<p><em>~1,540 kg total excess NO₂; 470 coarse pixels with f_p &gt; 0.01
 (see table above).</em></p>
 <h4 id="bridge">Bridge</h4>
 <p><strong>Note:</strong> Bridge needed <strong>Planet surface
@@ -460,151 +418,95 @@ can drive <strong>f_p</strong> (and mass) to ~0 even when the atmosphere
 isn’t clean—see <a
 href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.</p>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
-<th style="text-align: center;">Plume overlap <strong>f_p</strong></th>
-<th style="text-align: center;">Plume-weighted excess <strong>f_p ×
-ΔNO₂</strong></th>
+<th>Plume overlap <strong>f_p</strong></th>
+<th>Plume-weighted excess <strong>f_p × ΔNO₂</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;"><img
-src="images/cases/bridge_f_p_preview.png" alt="bridge f_p" /></td>
-<td style="text-align: center;"><img
-src="images/cases/bridge_delta_vcd_plume_preview.png"
-alt="bridge plume delta" /></td>
+<td>bridge f_p</td>
+<td>bridge plume delta</td>
 </tr>
 </tbody>
 </table>
-<figure>
-<img src="images/cases/bridge_histograms.png" alt="bridge histograms" />
-<figcaption aria-hidden="true">bridge histograms</figcaption>
-</figure>
-<p><em>~3,987 kg; 534 plume-ish pixels after the SR fix.</em></p>
+<p>bridge histograms</p>
+<p><em>~4,001 kg; 532 plume-ish pixels after the SR fix.</em></p>
 <h4 id="eaton">Eaton</h4>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
-<th style="text-align: center;">Plume overlap <strong>f_p</strong></th>
-<th style="text-align: center;">Plume-weighted excess <strong>f_p ×
-ΔNO₂</strong></th>
+<th>Plume overlap <strong>f_p</strong></th>
+<th>Plume-weighted excess <strong>f_p × ΔNO₂</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;"><img
-src="images/cases/eaton_f_p_preview.png" alt="eaton f_p" /></td>
-<td style="text-align: center;"><img
-src="images/cases/eaton_delta_vcd_plume_preview.png"
-alt="eaton plume delta" /></td>
+<td>eaton f_p</td>
+<td>eaton plume delta</td>
 </tr>
 </tbody>
 </table>
-<figure>
-<img src="images/cases/eaton_histograms.png" alt="eaton histograms" />
-<figcaption aria-hidden="true">eaton histograms</figcaption>
-</figure>
-<p><em>~1,957 kg; <strong>845</strong> plume-ish pixels—many flagged
+<p>eaton histograms</p>
+<p><em>~1,702 kg; <strong>840</strong> plume-ish pixels—many flagged
 cells, not necessarily the highest total kg.</em></p>
 <h4 id="line">Line</h4>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
-<th style="text-align: center;">Plume overlap <strong>f_p</strong></th>
-<th style="text-align: center;">Plume-weighted excess <strong>f_p ×
-ΔNO₂</strong></th>
+<th>Plume overlap <strong>f_p</strong></th>
+<th>Plume-weighted excess <strong>f_p × ΔNO₂</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;"><img
-src="images/cases/line_f_p_preview.png" alt="line f_p" /></td>
-<td style="text-align: center;"><img
-src="images/cases/line_delta_vcd_plume_preview.png"
-alt="line plume delta" /></td>
+<td>line f_p</td>
+<td>line plume delta</td>
 </tr>
 </tbody>
 </table>
-<figure>
-<img src="images/cases/line_histograms.png" alt="line histograms" />
-<figcaption aria-hidden="true">line histograms</figcaption>
-</figure>
-<p><em>~2,832 kg with <strong>433</strong> plume-ish
+<p>line histograms</p>
+<p><em>~2,769 kg with <strong>433</strong> plume-ish
 pixels—<strong>column strength</strong> can outweigh raw pixel
 count.</em></p>
 <h4 id="palisades">Palisades</h4>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
-<th style="text-align: center;">Plume overlap <strong>f_p</strong></th>
-<th style="text-align: center;">Plume-weighted excess <strong>f_p ×
-ΔNO₂</strong></th>
+<th>Plume overlap <strong>f_p</strong></th>
+<th>Plume-weighted excess <strong>f_p × ΔNO₂</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;"><img
-src="images/cases/palisades_f_p_preview.png" alt="palisades f_p" /></td>
-<td style="text-align: center;"><img
-src="images/cases/palisades_delta_vcd_plume_preview.png"
-alt="palisades plume delta" /></td>
+<td>palisades f_p</td>
+<td>palisades plume delta</td>
 </tr>
 </tbody>
 </table>
-<figure>
-<img src="images/cases/palisades_histograms.png"
-alt="palisades histograms" />
-<figcaption aria-hidden="true">palisades histograms</figcaption>
-</figure>
-<p><em>~1,375 kg but only <strong>73</strong> plume-ish pixels and a
-<strong>much smaller</strong> TEMPO grid than most other cases—signal
-per flagged cell is strong; domain size is not comparable to the
-others.</em></p>
+<p>palisades histograms</p>
+<p><em>~1,467 kg with <strong>901</strong> plume-ish pixels in this
+batch—<strong>signal per cell</strong> and <strong>swath
+footprint</strong> still matter more than the row in the table
+alone.</em></p>
 <h4 id="park">Park</h4>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
-<th style="text-align: center;">Plume overlap <strong>f_p</strong></th>
-<th style="text-align: center;">Plume-weighted excess <strong>f_p ×
-ΔNO₂</strong></th>
+<th>Plume overlap <strong>f_p</strong></th>
+<th>Plume-weighted excess <strong>f_p × ΔNO₂</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;"><img
-src="images/cases/park_f_p_preview.png" alt="park f_p" /></td>
-<td style="text-align: center;"><img
-src="images/cases/park_delta_vcd_plume_preview.png"
-alt="park plume delta" /></td>
+<td>park f_p</td>
+<td>park plume delta</td>
 </tr>
 </tbody>
 </table>
-<figure>
-<img src="images/cases/park_histograms.png" alt="park histograms" />
-<figcaption aria-hidden="true">park histograms</figcaption>
-</figure>
-<p><em>~1,238 kg; 649 plume-ish pixels.</em></p>
+<p>park histograms</p>
+<p><em>~1,486 kg; 662 plume-ish pixels.</em></p>
 <h3 id="eli5-contrasts-scientifically-honest">ELI5 contrasts
 (scientifically honest)</h3>
 <ul>
@@ -612,10 +514,11 @@ alt="park plume delta" /></td>
 kg</strong> with <strong>fewer</strong> “smoky” coarse pixels than
 eaton—because <strong>column strength</strong> matters as much as
 <strong>how many</strong> cells pass the f_p threshold.</li>
-<li><strong>Palisades vs. park:</strong> Palisades has <strong>far
-fewer</strong> plume-flagged pixels than park, yet <strong>similar
-order</strong> total kg—classic sign that <strong>signal per
-cell</strong> is strong where the mask and TEMPO agree.</li>
+<li><strong>Palisades vs. park:</strong> Total kg can land in a
+<strong>similar band</strong> with <strong>different</strong>
+plume-pixel counts—<strong>column strength</strong> and
+<strong>where</strong> f_p lines up with ΔVCD still dominate over a
+simple pixel tally.</li>
 <li><strong>Bridge:</strong> After switching to <strong>surface
 reflectance</strong>, the mask finally “sees” smoke on the TEMPO grid;
 before that, the pipeline could report <strong>~0</strong> not because
@@ -626,7 +529,7 @@ product</strong> broke the mask.</li>
 vocabulary in human language</h3>
 <ul>
 <li><strong>Central tendency:</strong> Across these six, total kg spans
-<strong>roughly ~1.2k–4k</strong> with this setup—useful as an
+<strong>roughly ~1.5k–4k</strong> with this setup—useful as an
 <strong>order-of-magnitude family</strong>, not a universal law.</li>
 <li><strong>Outlier sensitivity:</strong> One bad asset (wrong Planet
 type) can move a case from <strong>~0</strong> to <strong>thousands of
@@ -644,8 +547,8 @@ repo (outputs)</h2>
 folder has:</p>
 <table>
 <colgroup>
-<col style="width: 27%" />
-<col style="width: 72%" />
+<col style="width: 29%" />
+<col style="width: 70%" />
 </colgroup>
 <thead>
 <tr>
@@ -680,20 +583,20 @@ mass).</td>
 <p>Preview PNGs (from <code>smoke_plume_sanity_check.py</code> /
 <code>study_batch_visuals.py</code>) live under <code>maps/</code>:</p>
 <ul>
-<li><strong><code>f_p_preview.png</code></strong> — quick look at where
-the plume overlaps TEMPO (cropped).</li>
-<li><strong><code>delta_vcd_plume_preview.png</code></strong> — where
-the <strong>weighted</strong> excess is strongest (cropped).</li>
-<li><strong><code>histograms.png</code></strong> — how
-<strong>f_p</strong> and plume ΔVCD are distributed.</li>
+<li><code>**f_p_preview.png</code>** — quick look at where the plume
+overlaps TEMPO (cropped).</li>
+<li><code>**delta_vcd_plume_preview.png**</code> — where the
+<strong>weighted</strong> excess is strongest (cropped).</li>
+<li><code>**histograms.png</code>** — how <strong>f_p</strong> and plume
+ΔVCD are distributed.</li>
 </ul>
 <p>Full-resolution GeoTIFFs under <code>results/</code> are often
 <strong>gitignored</strong>. Generate them locally with
 <code>scripts/study_batch_visuals.py</code> (see <a
 href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>);
-use <strong><code>scripts/sync_guide_case_images.py</code></strong> to
-refresh the <strong>committed</strong> copies in
-<code>docs/images/cases/</code> for this guide.</p>
+use <code>**scripts/sync_guide_case_images.py</code>** to refresh the
+<strong>committed</strong> copies in <code>docs/images/cases/</code> for
+this guide.</p>
 <hr />
 <h2 id="what-the-numbers-do-not-automatically-mean">What the numbers do
 <em>not</em> automatically mean</h2>
@@ -710,8 +613,8 @@ dates, granules, and scene sizes change the story.</li>
 <h2 id="glossary-quick">Glossary (quick)</h2>
 <table>
 <colgroup>
-<col style="width: 40%" />
-<col style="width: 60%" />
+<col style="width: 19%" />
+<col style="width: 80%" />
 </colgroup>
 <thead>
 <tr>
@@ -769,8 +672,8 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <h2 id="where-to-go-next">Where to go next</h2>
 <table>
 <colgroup>
-<col style="width: 37%" />
-<col style="width: 62%" />
+<col style="width: 33%" />
+<col style="width: 66%" />
 </colgroup>
 <thead>
 <tr>
@@ -883,9 +786,10 @@ usually <strong>higher</strong> noise / different VCD.</td>
 </tr>
 <tr>
 <td><code>--max-cloud</code> F</td>
-<td>off</td>
-<td>Masks high cloud fraction; stricter F → <strong>fewer</strong>
-pixels, different valid mask and medians.</td>
+<td><strong>0.2</strong></td>
+<td>Masks where <code>eff_cloud_fraction &gt; F</code> (TEMPO trace-gas
+user guide). Stricter F → <strong>fewer</strong> pixels.
+<strong><code>--no-cloud-mask</code></strong> skips cloud masking.</td>
 </tr>
 <tr>
 <td><code>--ground-qa-zero</code></td>
@@ -1080,7 +984,8 @@ excess column</h3>
 <td>Max (f_p) for pixels eligible for <strong>background
 median</strong>. Higher → more “smoky” pixels can enter (VCD_{bg}) →
 <strong>lower</strong> typical (VCD_{bg}) and <strong>larger</strong>
-ΔVCD (and mass).</td>
+ΔVCD (and mass). Uses <strong>all finite VCD</strong> pixels (negative
+columns allowed; masking is from the GeoTIFF produced in step 1).</td>
 </tr>
 </tbody>
 </table>

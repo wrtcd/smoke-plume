@@ -1,26 +1,28 @@
 # Study batch — smoke plume NO₂ pipeline results
 
-Report generated: **2026-04-03** (bridge case re-run after Planet SR asset fix; other regions unchanged since last full batch).
+Report generated: **2026-04-06** (full regeneration after TEMPO preprocessing policy: `main_data_quality_flag == 0`, **`eff_cloud_fraction` ≤ 0.2**, tropospheric VCD retained including **negative** values where valid; see `scripts/tempo_l2_to_4326.py` and `scripts/smoke_plume_pipeline.py`).
 
 ## What was run
 
-- **Script:** `scripts/smoke_plume_pipeline.py` (same defaults as `scripts/run_all_cases.py`: `mask_method=blue_nir`, `blue_nir_max=0.42`, `fp_background_max=0.02`, TEMPO VCD units `molec_cm2`, bands Blue=2 / NIR=8).
+- **TEMPO L2 → GeoTIFF:** `scripts/tempo_l2_to_4326.py` per region (default **`--max-cloud 0.2`**; no extra cloud flags). Each study folder’s granule was warped to `tempo/TEMPO_NO2_trop_warped_4326.tif` (overwritten).
+- **Main pipeline:** `scripts/smoke_plume_pipeline.py` via `scripts/run_all_cases.py` (`mask_method=blue_nir`, `blue_nir_max=0.42`, `fp_background_max=0.02`, TEMPO VCD units `molec_cm2`, bands Blue=2 / NIR=8).
 - **Regions:** six folders under `smoke-plume-data/` with `case.json`.
-- **Outputs per case:** `results/study_batch/<region>/pipeline_summary.json`, `pipeline_table.csv`.
-- **Batch index:** `results/study_batch/batch_summary.json` (bridge row updated to match the re-run).
+- **Outputs per case:** `results/study_batch/<region>/pipeline_summary.json`, `pipeline_table.csv`, maps (`f_p.tif`, `delta_vcd.tif`, `delta_vcd_plume.tif`), `maps/*.png`, sanity artifacts.
+- **Batch index:** `results/study_batch/batch_summary.json`.
+- **Figures for docs:** `scripts/render_case_study_comparison.py`, `scripts/sync_guide_case_images.py`.
 
 ## Summary table
 
 | Region | Status | Total excess NO₂ (kg) | VCD background median (molec/cm²) | TEMPO pixels | Plume pixels (f_p > 0.01) |
 |--------|--------|----------------------:|-----------------------------------:|-------------:|-------------------------:|
-| airport | ok | 1,515.49 | 5.48 × 10¹⁴ | 9,640,800 | 467 |
-| bridge | ok | 3,986.60 | 8.26 × 10¹⁴ | 8,874,000 | 534 |
-| eaton | ok | 1,957.25 | 6.74 × 10¹⁴ | 8,035,200 | 845 |
-| line | ok | 2,831.66 | 6.92 × 10¹⁴ | 8,222,400 | 433 |
-| palisades | ok | 1,375.01 | 9.20 × 10¹⁴ | 2,096,220 | 73 |
-| park | ok | 1,237.55 | 5.86 × 10¹⁴ | 9,309,600 | 649 |
+| airport | ok | 1,539.92 | 3.81 × 10¹⁴ | 9,312,186 | 470 |
+| bridge | ok | 4,000.93 | 5.00 × 10¹⁴ | 8,550,000 | 532 |
+| eaton | ok | 1,701.86 | 5.72 × 10¹⁴ | 7,941,600 | 840 |
+| line | ok | 2,769.43 | 6.80 × 10¹⁴ | 7,952,400 | 433 |
+| palisades | ok | 1,466.93 | 6.50 × 10¹⁴ | 8,920,800 | 901 |
+| park | ok | 1,485.69 | 3.18 × 10¹⁴ | 9,680,400 | 662 |
 
-Values are taken from each `pipeline_summary.json` under `results/study_batch/<region>/` (bridge updated **2026-04-03**; others from the prior successful batch on the same machine).
+Values are from each `pipeline_summary.json` under `results/study_batch/<region>/` for this batch.
 
 ## Plain-English pipeline guide
 
@@ -28,7 +30,7 @@ Step-by-step explanation with diagrams (and pointers to these previews): **[docs
 
 ## Visual outputs (PNG + GeoTIFF maps)
 
-Generated **2026-04-03** with `scripts/study_batch_visuals.py` (re-runs each case with map writes, then `smoke_plume_sanity_check.py`). Total runtime ~3–4 minutes for all six cases on a typical laptop.
+Generated with `scripts/study_batch_visuals.py` (re-runs each case with map writes, then `smoke_plume_sanity_check.py`).
 
 **Per region** (`results/study_batch/<region>/`):
 
@@ -56,28 +58,19 @@ py -3 scripts/study_batch_visuals.py --results-root results/study_batch --only p
 
 - **Issue:** An earlier bridge Planet file was **not** analytic **surface reflectance** (`AnalyticMS_8b.tif` without `_SR_`). The blue/NIR smoke mask did not behave like the other study scenes, producing **0** TEMPO pixels with f_p > 0.01 and negligible mass.
 - **Fix:** Use **PSScene analytic SR** 8-band: `smoke-plume-data/bridge/planet/20240910_184221_67_24f3_3B_AnalyticMS_SR_8b.tif`, referenced in `smoke-plume-data/bridge/case.json`.
-- **After re-run:** **534** plume pixels (f_p > 0.01) and **~3,987 kg** total excess NO₂ (same pipeline parameters as other regions).
 - **Time collocation (bridge):** see `time_match` in `smoke-plume-data/bridge/case.json` and `results/study_batch/bridge/pipeline_summary.json`.
 
 ## Reproduce
 
-Full batch (all regions):
+Warp TEMPO (defaults include cloud ≤ 0.2), then batch:
 
 ```powershell
-py -3 scripts/run_all_cases.py --cases-root smoke-plume-data --out-root results/study_batch
-```
-
-Bridge only (after editing paths if needed):
-
-```powershell
-py -3 scripts/smoke_plume_pipeline.py `
-  --planet smoke-plume-data/bridge/planet/20240910_184221_67_24f3_3B_AnalyticMS_SR_8b.tif `
-  --tempo smoke-plume-data/bridge/tempo/TEMPO_NO2_trop_warped_4326.tif `
-  --out results/study_batch/bridge
+py -3 scripts/tempo_l2_to_4326.py --nc smoke-plume-data/palisades/tempo/<granule>.nc -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif
+py -3 scripts/run_all_cases.py --cases-root smoke-plume-data --out-root results/study_batch --write-maps
 ```
 
 ## Caveats
 
-- Masses are **method-dependent** (mask thresholds, background definition on low-f_p pixels, TEMPO QA/cloud policy in `tempo_l2_to_4326.py`).
-- **VCD background** is reported in **molecules/cm²** (large magnitudes are expected).
-- Cross-region **comparability** is limited: different fires, dates, granules, and scene extents.
+- Masses depend on **mask thresholds**, **background** definition on low-f_p pixels, and **TEMPO** QA/cloud/VCD policy in `tempo_l2_to_4326.py`.
+- **VCD background** is in **molecules/cm²** (large magnitudes are expected).
+- Cross-region **comparability** is limited: different fires, dates, granules, and swath extents.

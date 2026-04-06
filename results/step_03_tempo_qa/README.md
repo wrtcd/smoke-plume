@@ -7,8 +7,10 @@
 
 ### VCD masking (on the swath, after optional AMF adjustment)
 
+Gridding keeps **finite** tropospheric VCD including **negative** values where not masked (TEMPO user guide); fill/sentinels are excluded.
+
 - **`main_data_quality_flag`**: by default, pixels with **flag != 0** → NaN. **`--no-qa`** disables.
-- **`eff_cloud_fraction`**: **`--max-cloud F`** masks where **eff_cloud_fraction > F**.
+- **`eff_cloud_fraction`**: default **`--max-cloud 0.2`** masks where **eff_cloud_fraction > 0.2** (TEMPO trace-gas user guide). **`--no-cloud-mask`** skips cloud masking.
 - **`ground_pixel_quality_flag`**: **`--ground-qa-zero`** — verify ATBD before using.
 
 ### Optional plume AMF adjustment (`--amf-plume-adjust`)
@@ -45,6 +47,7 @@ Without `--amf-plume-adjust`, bands match the 6-band layout (no band 2 `amf_trop
 python scripts/tempo_l2_to_4326.py ^
   --nc smoke-plume-data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc ^
   -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif ^
-  --max-cloud 0.3 --stack ^
+  --stack ^
   --amf-plume-adjust --plume-height-agl-m 1000 --plume-fwhm-m 500
 ```
+(Default cloud policy: **`eff_cloud_fraction` ≤ 0.2**; omit `--no-cloud-mask` to keep it.)

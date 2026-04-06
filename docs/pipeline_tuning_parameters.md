@@ -25,7 +25,7 @@ Changing an **earlier** step’s outputs (especially TEMPO VCD or Planet scene) 
 | `--bbox` W S E N | full valid swath | **Clips** extent and which pixels are interpolated; changes every TEMPO pixel value and overlap with Planet. |
 | `--res` | ~long side / 3600°, min 0.005° | **Finer** res → more pixels, different interpolation; **coarser** → smoother fields, different sub-pixel overlap with \(f_p\). |
 | `--no-qa` | off (QA on) | If set, keeps pixels with `main_data_quality_flag != 0` → usually **higher** noise / different VCD. |
-| `--max-cloud` F | off | Masks high cloud fraction; stricter F → **fewer** pixels, different valid mask and medians. |
+| `--max-cloud` F | **0.2** | Masks where `eff_cloud_fraction > F` (TEMPO trace-gas user guide). Stricter F → **fewer** pixels. **`--no-cloud-mask`** skips cloud masking. |
 | `--ground-qa-zero` | off | Also requires `ground_pixel_quality_flag == 0`; can remove more pixels (check ATBD semantics). |
 | `--stack` | off | Writes **multi-band** GeoTIFF (VCD + AMF, cloud, QA…). Affects **`--tempo-vcd-band`** in the main pipeline (band 1 = VCD if stacked as expected). |
 | `--amf-plume-adjust` | off | Rescales tropospheric VCD using scattering weights vs assumed vertical plume shape → **systematic** VCD change where enabled. |
@@ -70,7 +70,7 @@ Changing an **earlier** step’s outputs (especially TEMPO VCD or Planet scene) 
 
 | Parameter | Default | Effect |
 |-----------|---------|--------|
-| `--fp-bg-max` | `0.02` | Max \(f_p\) for pixels eligible for **background median**. Higher → more “smoky” pixels can enter \(VCD_{bg}\) → **lower** typical \(VCD_{bg}\) and **larger** ΔVCD (and mass). |
+| `--fp-bg-max` | `0.02` | Max \(f_p\) for pixels eligible for **background median**. Higher → more “smoky” pixels can enter \(VCD_{bg}\) → **lower** typical \(VCD_{bg}\) and **larger** ΔVCD (and mass). Uses **all finite VCD** pixels (negative columns allowed; masking is from the GeoTIFF produced in step 1). |
 
 ### Outputs
 

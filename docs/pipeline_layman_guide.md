@@ -120,15 +120,15 @@ These match the study batch documented in [STUDY_BATCH_RESULTS.md](../results/st
 
 | Region    | Total excess NO₂ (kg) | “Smoky” TEMPO pixels (f_p > 0.01) | TEMPO grid (pixels) | VCD background median (molec/cm²) |
 | --------- | --------------------- | --------------------------------- | ------------------- | --------------------------------- |
-| airport   | 1,515                 | 467                               | ~9.64 M             | ~5.5 × 10¹⁴                       |
-| bridge    | 3,987                 | 534                               | ~8.87 M             | ~8.3 × 10¹⁴                       |
-| eaton     | 1,957                 | 845                               | ~8.04 M             | ~6.7 × 10¹⁴                       |
-| line      | 2,832                 | 433                               | ~8.22 M             | ~6.9 × 10¹⁴                       |
-| palisades | 1,375                 | 73                                | **~2.10 M**         | ~9.2 × 10¹⁴                       |
-| park      | 1,238                 | 649                               | ~9.31 M             | ~5.9 × 10¹⁴                       |
+| airport   | ~1,540                | 470                               | ~9.31 M             | ~3.8 × 10¹⁴                       |
+| bridge    | ~4,001                | 532                               | ~8.55 M             | ~5.0 × 10¹⁴                       |
+| eaton     | ~1,702                | 840                               | ~7.94 M             | ~5.7 × 10¹⁴                       |
+| line      | ~2,769                | 433                               | ~7.95 M             | ~6.8 × 10¹⁴                       |
+| palisades | ~1,467                | 901                               | ~8.92 M             | ~6.5 × 10¹⁴                       |
+| park      | ~1,486                | 662                               | ~9.68 M             | ~3.2 × 10¹⁴                       |
 
 
-**Notice:** **Palisades** sits on a **much smaller TEMPO grid** (fewer rows/columns in the file) than the others—a **file footprint / swath** effect, not “a smaller fire.” The mass sum always runs over **whatever pixels exist in that GeoTIFF**.
+**Notice:** TEMPO **grid sizes** (pixel counts) vary by **granule coverage and warp resolution**—check the table column before comparing total kg across regions. Mass always runs over **whatever pixels exist in that GeoTIFF**.
 
 ### Cross-region comparison plots (from the batch summaries)
 
@@ -164,7 +164,7 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 airport histograms
 
-*~1,515 kg total excess NO₂; 467 coarse pixels with f_p > 0.01 (see table above).*
+*~1,540 kg total excess NO₂; 470 coarse pixels with f_p > 0.01 (see table above).*
 
 #### Bridge
 
@@ -178,7 +178,7 @@ airport histograms
 
 bridge histograms
 
-*~3,987 kg; 534 plume-ish pixels after the SR fix.*
+*~4,001 kg; 532 plume-ish pixels after the SR fix.*
 
 #### Eaton
 
@@ -190,7 +190,7 @@ bridge histograms
 
 eaton histograms
 
-*~1,957 kg; **845** plume-ish pixels—many flagged cells, not necessarily the highest total kg.*
+*~1,702 kg; **840** plume-ish pixels—many flagged cells, not necessarily the highest total kg.*
 
 #### Line
 
@@ -202,7 +202,7 @@ eaton histograms
 
 line histograms
 
-*~2,832 kg with **433** plume-ish pixels—**column strength** can outweigh raw pixel count.*
+*~2,769 kg with **433** plume-ish pixels—**column strength** can outweigh raw pixel count.*
 
 #### Palisades
 
@@ -214,7 +214,7 @@ line histograms
 
 palisades histograms
 
-*~1,375 kg but only **73** plume-ish pixels and a **much smaller** TEMPO grid than most other cases—signal per flagged cell is strong; domain size is not comparable to the others.*
+*~1,467 kg with **901** plume-ish pixels in this batch—**signal per cell** and **swath footprint** still matter more than the row in the table alone.*
 
 #### Park
 
@@ -226,17 +226,17 @@ palisades histograms
 
 park histograms
 
-*~1,238 kg; 649 plume-ish pixels.*
+*~1,486 kg; 662 plume-ish pixels.*
 
 ### ELI5 contrasts (scientifically honest)
 
 - **Line vs. eaton:** Line can show **higher total kg** with **fewer** “smoky” coarse pixels than eaton—because **column strength** matters as much as **how many** cells pass the f_p threshold.
-- **Palisades vs. park:** Palisades has **far fewer** plume-flagged pixels than park, yet **similar order** total kg—classic sign that **signal per cell** is strong where the mask and TEMPO agree.
+- **Palisades vs. park:** Total kg can land in a **similar band** with **different** plume-pixel counts—**column strength** and **where** f_p lines up with ΔVCD still dominate over a simple pixel tally.
 - **Bridge:** After switching to **surface reflectance**, the mask finally “sees” smoke on the TEMPO grid; before that, the pipeline could report **~0** not because the atmosphere was clean, but because **the wrong Planet product** broke the mask.
 
 ### Statistical-ish vocabulary in human language
 
-- **Central tendency:** Across these six, total kg spans **roughly ~1.2k–4k** with this setup—useful as an **order-of-magnitude family**, not a universal law.
+- **Central tendency:** Across these six, total kg spans **roughly ~1.5k–4k** with this setup—useful as an **order-of-magnitude family**, not a universal law.
 - **Outlier sensitivity:** One bad asset (wrong Planet type) can move a case from **~0** to **thousands of kg**—always check **inputs** before interpreting **outputs**.
 - **Correlation ≠ causation:** Higher kg does **not** mean “worse fire” in any moral or regulatory sense; it means **this integrated model** assigned more plume-weighted excess column **inside that GeoTIFF**.
 

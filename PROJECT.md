@@ -105,7 +105,7 @@ where **Σ(M_Planet)** is the sum of the mask over Planet pixels inside one TEMP
 **3.1 Quality filtering**
 
 - Apply QA for cloud fraction and retrieval quality.
-- Exclude or down-weight pixels with **high cloud fraction** (order **~0.2–0.3**, tune to product) and low QA.
+- Exclude or down-weight pixels with **high cloud fraction** (repository default **`eff_cloud_fraction` ≤ 0.2** in `tempo_l2_to_4326.py`; tune to product) and low QA.
 
 **3.2 AMF / vertical sensitivity**
 

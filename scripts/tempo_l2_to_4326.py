@@ -20,9 +20,10 @@ Example:
   python scripts/tempo_l2_to_4326.py \\
     --nc smoke-plume-data/palisades/tempo/TEMPO_NO2_L2_V03_20250110T184529Z_S008G09.nc \\
     -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif \\
-    --max-cloud 0.3 --stack --amf-plume-adjust --plume-height-agl-m 1000
+    --stack --amf-plume-adjust --plume-height-agl-m 1000
 
 QA: by default, mask VCD where main_data_quality_flag != 0. Optional --no-qa, --ground-qa-zero.
+Cloud: by default, mask where eff_cloud_fraction > 0.2; use --no-cloud-mask to skip.
 --amf-plume-adjust: optional VCD rescaling for plume height (default 1000 m AGL); see tempo_amf_plume_adjust.py
 and results/step_03_tempo_qa/README.md.
 
@@ -59,13 +60,13 @@ FILL = -1e30
 
 
 def valid_pixels_mask_vcd(lat: np.ndarray, lon: np.ndarray, vcd: np.ndarray) -> np.ndarray:
+    # Negative VCD is valid for TEMPO (differential retrieval); exclude fill / huge sentinels only.
     return (
         np.isfinite(lat)
         & np.isfinite(lon)
         & np.isfinite(vcd)
         & (vcd > FILL / 2)
         & (vcd < 1e30)
-        & (vcd >= 0)
     )
 
 
@@ -254,9 +255,14 @@ def main() -> None:
     p.add_argument(
         "--max-cloud",
         type=float,
-        default=None,
+        default=0.2,
         metavar="FRACTION",
-        help="Mask VCD where eff_cloud_fraction > FRACTION (e.g. 0.25–0.3). Omit to skip cloud masking.",
+        help="Mask VCD where eff_cloud_fraction > FRACTION (default 0.2 per TEMPO trace-gas user guide).",
+    )
+    p.add_argument(
+        "--no-cloud-mask",
+        action="store_true",
+        help="Do not mask by eff_cloud_fraction (ignores --max-cloud).",
     )
     p.add_argument(
         "--ground-qa-zero",
@@ -293,10 +299,11 @@ def main() -> None:
     if out is None:
         out = args.nc.parent / "TEMPO_NO2_trop_warped_4326.tif"
 
+    max_cloud_fraction = None if args.no_cloud_mask else args.max_cloud
     lat, lon, vcd, units, ancillary = read_swath(
         args.nc,
         use_main_qa=not args.no_qa,
-        max_cloud_fraction=args.max_cloud,
+        max_cloud_fraction=max_cloud_fraction,
         use_ground_qa_zero=args.ground_qa_zero,
         amf_plume_adjust=args.amf_plume_adjust,
         plume_height_agl_m=args.plume_height_agl_m,
@@ -375,7 +382,7 @@ def main() -> None:
                 dst.set_band_description(i, d if len(d) <= 256 else d[:253] + "...")
         tag_qa = (
             f"main_qa={'off' if args.no_qa else 'mask nonzero'}; "
-            f"cloud={'off' if args.max_cloud is None else f'mask eff_cloud > {args.max_cloud}'}; "
+            f"cloud={'off' if max_cloud_fraction is None else f'mask eff_cloud > {max_cloud_fraction}'}; "
             f"ground_qa_zero={args.ground_qa_zero}"
         )
         dst.update_tags(

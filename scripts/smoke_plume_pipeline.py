@@ -278,7 +278,8 @@ def run(
             planet_ds, mask_01, tempo_ds, src_nodata=mask_nodata
         )
 
-    valid = np.isfinite(vcd) & (vcd > 0)
+    # Finite tropospheric VCD only; negatives are allowed (TEMPO user guide). QA/cloud live in the GeoTIFF from tempo_l2_to_4326.py.
+    valid = np.isfinite(vcd)
     bg_sel = valid & (f_p <= fp_bg_max)
     if np.sum(bg_sel) < 50:
         bg_sel = valid & (f_p <= min(0.05, fp_bg_max + 0.03))

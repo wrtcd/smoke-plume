@@ -28,10 +28,12 @@ Large rasters (`*.tif`, `*.nc`) are **gitignored**; study-region folders live un
 ## Typical run (after placing pilot rasters per PROJECT.md)
 
 ```powershell
-python scripts/tempo_l2_to_4326.py --nc smoke-plume-data/palisades/tempo/<granule>.nc -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif
-python scripts/smoke_plume_pipeline.py --write-maps
-python scripts/smoke_plume_sanity_check.py
+py -3 scripts/tempo_l2_to_4326.py --nc smoke-plume-data/palisades/tempo/<granule>.nc -o smoke-plume-data/palisades/tempo/TEMPO_NO2_trop_warped_4326.tif
+py -3 scripts/smoke_plume_pipeline.py --write-maps
+py -3 scripts/smoke_plume_sanity_check.py
 ```
+
+`tempo_l2_to_4326.py` defaults: **`main_data_quality_flag == 0`**, mask **`eff_cloud_fraction` > 0.2**, tropospheric VCD **may be negative** (not stripped before gridding). Use **`--no-cloud-mask`** only if you need to skip cloud screening.
 
 Batch (six regions under `smoke-plume-data/`, each with `case.json`):
 
