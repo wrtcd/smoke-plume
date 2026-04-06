@@ -10,6 +10,10 @@ __pycache__/
 # Generated from PDFs (local preview only)
 pdf-pages/
 
+# Built from docs/pipeline_layman_guide.md (run scripts/build_pipeline_guide_pdf.py)
+docs/pipeline_layman_guide.html
+docs/pipeline_layman_guide.pdf
+
 # Local browse thumbnails / large exports under data/
 data/**/thumb*.png
 
