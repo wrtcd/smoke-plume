@@ -200,6 +200,7 @@ smoke” at Planet resolution.</p>
 (f_p)</p>
 <p><em>Figure: same idea at two scales—the fine “smoke” map is averaged
 into each big TEMPO pixel to get <strong>f_p</strong>.</em></p>
+<p><img src="images/schematic_fine_vs_coarse.png" /></p>
 <h3 id="step-4-subtract-normal-no₂-background">Step 4 — Subtract
 “normal” NO₂ (<strong>background</strong>)</h3>
 <p>The atmosphere always has some NO₂ (cities, chemistry, etc.). We
@@ -212,6 +213,7 @@ a smoggy day.</p>
 <p>Schematic: total column, background, and excess</p>
 <p><em>Figure: we only keep the <strong>excess</strong> above a
 background estimated from low-<strong>f_p</strong> pixels.</em></p>
+<p><img src="images/schematic_background_subtraction.png" /></p>
 <h3 id="step-5-combine-and-add-up-to-kilograms">Step 5 — Combine and add
 up to <strong>kilograms</strong></h3>
 <p>For each TEMPO pixel we combine:</p>
@@ -225,6 +227,7 @@ NO₂</strong>—that’s the <strong>total excess NO₂ (kg)</strong> in
 <p>Schematic: f_p, excess column, and integration to kg</p>
 <p><em>Figure: multiply overlap by excess column, then sum over the grid
 with pixel area to get <strong>kg</strong>.</em></p>
+<p><img src="images/schematic_pipeline_strip.png" /></p>
 <hr />
 <h2 id="flowchart-technical-but-readable">Flowchart (technical but
 readable)</h2>
@@ -369,19 +372,19 @@ comparison plots (from the batch summaries)</h3>
 this guide as PNGs. They help you compare regions
 <strong>without</strong> treating the table as a simple leaderboard.</p>
 <p><strong>1 — Total kg, plume-pixel count, and grid size</strong></p>
-<p>Bar charts: mass, plume pixels, grid size for six regions</p>
+<p><img src="images/case_study_six_way_bars.png" /></p>
 <p><strong>2 — Mass vs. count of “plume-ish” pixels</strong></p>
 <p>If high mass always came from “more plume pixels,” points would hug a
 neat line. They don’t—<strong>a few pixels with huge excess
 column</strong> can rival <strong>many pixels with modest
 excess</strong>.</p>
-<p>Scatter: mass vs plume pixel count</p>
+<p><img src="images/case_study_mass_vs_plume_scatter.png" /></p>
 <p><strong>3 — Rough “kg per plume-ish pixel” (ranked)</strong></p>
 <p>This is <strong>not</strong> a physical emission factor—it’s a
 <strong>cartoon ratio</strong> for intuition (Palisades often stands out
 when <strong>few</strong> cells carry <strong>most</strong> of the
 signal).</p>
-<p>Bar: kg per plume pixel (ranked)</p>
+<p><img src="images/case_study_kg_per_plume_pixel.png" /></p>
 <h3 id="case-by-case-maps-cropped-previews">Case-by-case maps (cropped
 previews)</h3>
 <p>For <strong>each</strong> study region, the pipeline exports
@@ -395,6 +398,10 @@ guide offline or on GitHub; refresh them after regenerating maps (see <a
 href="#commands-if-you-want-to-reproduce-visuals">Commands</a>).</p>
 <h4 id="airport">Airport</h4>
 <table>
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 63%" />
+</colgroup>
 <thead>
 <tr>
 <th>Plume overlap <strong>f_p</strong></th>
@@ -403,12 +410,12 @@ href="#commands-if-you-want-to-reproduce-visuals">Commands</a>).</p>
 </thead>
 <tbody>
 <tr>
-<td>airport f_p</td>
-<td>airport plume delta</td>
+<td><img src="images/cases/airport_f_p_preview.png" /></td>
+<td><img src="images/cases/airport_delta_vcd_plume_preview.png" /></td>
 </tr>
 </tbody>
 </table>
-<p>airport histograms</p>
+<p><img src="images/cases/airport_histograms.png" /></p>
 <p><em>~766 kg total excess NO₂; 470 coarse pixels with f_p &gt; 0.01
 (see table above).</em></p>
 <h4 id="bridge">Bridge</h4>
@@ -418,6 +425,10 @@ can drive <strong>f_p</strong> (and mass) to ~0 even when the atmosphere
 isn’t clean—see <a
 href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.</p>
 <table>
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 63%" />
+</colgroup>
 <thead>
 <tr>
 <th>Plume overlap <strong>f_p</strong></th>
@@ -426,15 +437,19 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 </thead>
 <tbody>
 <tr>
-<td>bridge f_p</td>
-<td>bridge plume delta</td>
+<td><img src="images/cases/bridge_f_p_preview.png" /></td>
+<td><img src="images/cases/bridge_delta_vcd_plume_preview.png" /></td>
 </tr>
 </tbody>
 </table>
-<p>bridge histograms</p>
+<p><img src="images/cases/bridge_histograms.png" /></p>
 <p><em>~769 kg; 536 plume-ish pixels after the SR fix.</em></p>
 <h4 id="eaton">Eaton</h4>
 <table>
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 63%" />
+</colgroup>
 <thead>
 <tr>
 <th>Plume overlap <strong>f_p</strong></th>
@@ -443,17 +458,21 @@ href="../results/study_batch/STUDY_BATCH_RESULTS.md">STUDY_BATCH_RESULTS.md</a>.
 </thead>
 <tbody>
 <tr>
-<td>eaton f_p</td>
-<td>eaton plume delta</td>
+<td><img src="images/cases/eaton_f_p_preview.png" /></td>
+<td><img src="images/cases/eaton_delta_vcd_plume_preview.png" /></td>
 </tr>
 </tbody>
 </table>
-<p>eaton histograms</p>
+<p><img src="images/cases/eaton_histograms.png" /></p>
 <p><em>~-1,568 kg; <strong>840</strong> plume-ish pixels—negative totals
 can happen with background subtraction over the Planet-bounded
 window.</em></p>
 <h4 id="line">Line</h4>
 <table>
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 63%" />
+</colgroup>
 <thead>
 <tr>
 <th>Plume overlap <strong>f_p</strong></th>
@@ -462,16 +481,20 @@ window.</em></p>
 </thead>
 <tbody>
 <tr>
-<td>line f_p</td>
-<td>line plume delta</td>
+<td><img src="images/cases/line_f_p_preview.png" /></td>
+<td><img src="images/cases/line_delta_vcd_plume_preview.png" /></td>
 </tr>
 </tbody>
 </table>
-<p>line histograms</p>
+<p><img src="images/cases/line_histograms.png" /></p>
 <p><em>~432 kg with <strong>433</strong> plume-ish pixels—<strong>column
 strength</strong> can outweigh raw pixel count.</em></p>
 <h4 id="palisades">Palisades</h4>
 <table>
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 63%" />
+</colgroup>
 <thead>
 <tr>
 <th>Plume overlap <strong>f_p</strong></th>
@@ -480,17 +503,22 @@ strength</strong> can outweigh raw pixel count.</em></p>
 </thead>
 <tbody>
 <tr>
-<td>palisades f_p</td>
-<td>palisades plume delta</td>
+<td><img src="images/cases/palisades_f_p_preview.png" /></td>
+<td><img
+src="images/cases/palisades_delta_vcd_plume_preview.png" /></td>
 </tr>
 </tbody>
 </table>
-<p>palisades histograms</p>
+<p><img src="images/cases/palisades_histograms.png" /></p>
 <p><em>~-136 kg with <strong>901</strong> plume-ish pixels in this
 batch—negative totals can happen with background subtraction over the
 Planet-bounded window.</em></p>
 <h4 id="park">Park</h4>
 <table>
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 63%" />
+</colgroup>
 <thead>
 <tr>
 <th>Plume overlap <strong>f_p</strong></th>
@@ -499,12 +527,12 @@ Planet-bounded window.</em></p>
 </thead>
 <tbody>
 <tr>
-<td>park f_p</td>
-<td>park plume delta</td>
+<td><img src="images/cases/park_f_p_preview.png" /></td>
+<td><img src="images/cases/park_delta_vcd_plume_preview.png" /></td>
 </tr>
 </tbody>
 </table>
-<p>park histograms</p>
+<p><img src="images/cases/park_histograms.png" /></p>
 <p><em>~1,069 kg; 662 plume-ish pixels.</em></p>
 <h3 id="eli5-contrasts-scientifically-honest">ELI5 contrasts
 (scientifically honest)</h3>
@@ -526,9 +554,10 @@ product</strong> broke the mask.</li>
 <h3 id="statistical-ish-vocabulary-in-human-language">Statistical-ish
 vocabulary in human language</h3>
 <ul>
-<li><strong>Central tendency:</strong> Across these six, total kg spans
-<strong>roughly ~1.5k–4k</strong> with this setup—useful as an
-<strong>order-of-magnitude family</strong>, not a universal law.</li>
+<li><strong>Central tendency:</strong> Across these six, totals span
+<strong>roughly -1.6k to +1.1k kg</strong> in this batch (with the
+Planet-bounded window policy). That’s a useful “family” for sanity
+checks, not a universal law.</li>
 <li><strong>Outlier sensitivity:</strong> One bad asset (wrong Planet
 type) can move a case from <strong>~0</strong> to <strong>thousands of
 kg</strong>—always check <strong>inputs</strong> before interpreting
@@ -600,8 +629,9 @@ this guide.</p>
 <em>not</em> automatically mean</h2>
 <ul>
 <li><strong>Not a legal emissions inventory.</strong> The mask is
-heuristic; the domain is often a <strong>whole TEMPO swath</strong>, not
-a tiny fire perimeter unless you clip.</li>
+heuristic; and the reported mass depends on the <strong>chosen
+domain</strong> (in this repo: TEMPO subset to Planet scene bounds, not
+a fire perimeter).</li>
 <li><strong>Not “only the fire.”</strong> Any smoke-like pixel
 <strong>anywhere</strong> in the grid contributes.</li>
 <li><strong>Cross-fire comparisons are delicate.</strong> Different

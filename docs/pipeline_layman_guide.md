@@ -53,6 +53,8 @@ Schematic: fine Planet grid averaged into coarse TEMPO cells (f_p)
 
 *Figure: same idea at two scales—the fine “smoke” map is averaged into each big TEMPO pixel to get **f_p**.*
 
+![](images/schematic_fine_vs_coarse.png)
+
 ### Step 4 — Subtract “normal” NO₂ (**background**)
 
 The atmosphere always has some NO₂ (cities, chemistry, etc.). We estimate a **background** column using TEMPO pixels that are **clean in the Planet sense** (low **f_p**). Then:
@@ -65,6 +67,8 @@ Schematic: total column, background, and excess
 
 *Figure: we only keep the **excess** above a background estimated from low-**f_p** pixels.*
 
+![](images/schematic_background_subtraction.png)
+
 ### Step 5 — Combine and add up to **kilograms**
 
 For each TEMPO pixel we combine:
@@ -76,6 +80,8 @@ Then we **multiply by the geographic size** of each TEMPO pixel and sum over the
 Schematic: f_p, excess column, and integration to kg
 
 *Figure: multiply overlap by excess column, then sum over the grid with pixel area to get **kg**.*
+
+![](images/schematic_pipeline_strip.png)
 
 ---
 
@@ -136,19 +142,19 @@ These charts are built by `scripts/render_case_study_comparison.py` and saved ne
 
 **1 — Total kg, plume-pixel count, and grid size**
 
-Bar charts: mass, plume pixels, grid size for six regions
+![](images/case_study_six_way_bars.png)
 
 **2 — Mass vs. count of “plume-ish” pixels**
 
 If high mass always came from “more plume pixels,” points would hug a neat line. They don’t—**a few pixels with huge excess column** can rival **many pixels with modest excess**.
 
-Scatter: mass vs plume pixel count
+![](images/case_study_mass_vs_plume_scatter.png)
 
 **3 — Rough “kg per plume-ish pixel” (ranked)**
 
 This is **not** a physical emission factor—it’s a **cartoon ratio** for intuition (Palisades often stands out when **few** cells carry **most** of the signal).
 
-Bar: kg per plume pixel (ranked)
+![](images/case_study_kg_per_plume_pixel.png)
 
 ### Case-by-case maps (cropped previews)
 
@@ -159,10 +165,10 @@ For **each** study region, the pipeline exports **cropped** PNGs next to the plu
 
 | Plume overlap **f_p** | Plume-weighted excess **f_p × ΔNO₂** |
 | --------------------- | ------------------------------------ |
-| airport f_p           | airport plume delta                  |
+| ![](images/cases/airport_f_p_preview.png) | ![](images/cases/airport_delta_vcd_plume_preview.png) |
 
 
-airport histograms
+![](images/cases/airport_histograms.png)
 
 *~766 kg total excess NO₂; 470 coarse pixels with f_p > 0.01 (see table above).*
 
@@ -173,10 +179,10 @@ airport histograms
 
 | Plume overlap **f_p** | Plume-weighted excess **f_p × ΔNO₂** |
 | --------------------- | ------------------------------------ |
-| bridge f_p            | bridge plume delta                   |
+| ![](images/cases/bridge_f_p_preview.png) | ![](images/cases/bridge_delta_vcd_plume_preview.png) |
 
 
-bridge histograms
+![](images/cases/bridge_histograms.png)
 
 *~769 kg; 536 plume-ish pixels after the SR fix.*
 
@@ -185,10 +191,10 @@ bridge histograms
 
 | Plume overlap **f_p** | Plume-weighted excess **f_p × ΔNO₂** |
 | --------------------- | ------------------------------------ |
-| eaton f_p             | eaton plume delta                    |
+| ![](images/cases/eaton_f_p_preview.png) | ![](images/cases/eaton_delta_vcd_plume_preview.png) |
 
 
-eaton histograms
+![](images/cases/eaton_histograms.png)
 
 *~-1,568 kg; **840** plume-ish pixels—negative totals can happen with background subtraction over the Planet-bounded window.*
 
@@ -197,10 +203,10 @@ eaton histograms
 
 | Plume overlap **f_p** | Plume-weighted excess **f_p × ΔNO₂** |
 | --------------------- | ------------------------------------ |
-| line f_p              | line plume delta                     |
+| ![](images/cases/line_f_p_preview.png) | ![](images/cases/line_delta_vcd_plume_preview.png) |
 
 
-line histograms
+![](images/cases/line_histograms.png)
 
 *~432 kg with **433** plume-ish pixels—**column strength** can outweigh raw pixel count.*
 
@@ -209,10 +215,10 @@ line histograms
 
 | Plume overlap **f_p** | Plume-weighted excess **f_p × ΔNO₂** |
 | --------------------- | ------------------------------------ |
-| palisades f_p         | palisades plume delta                |
+| ![](images/cases/palisades_f_p_preview.png) | ![](images/cases/palisades_delta_vcd_plume_preview.png) |
 
 
-palisades histograms
+![](images/cases/palisades_histograms.png)
 
 *~-136 kg with **901** plume-ish pixels in this batch—negative totals can happen with background subtraction over the Planet-bounded window.*
 
@@ -221,10 +227,10 @@ palisades histograms
 
 | Plume overlap **f_p** | Plume-weighted excess **f_p × ΔNO₂** |
 | --------------------- | ------------------------------------ |
-| park f_p              | park plume delta                     |
+| ![](images/cases/park_f_p_preview.png) | ![](images/cases/park_delta_vcd_plume_preview.png) |
 
 
-park histograms
+![](images/cases/park_histograms.png)
 
 *~1,069 kg; 662 plume-ish pixels.*
 
@@ -236,7 +242,7 @@ park histograms
 
 ### Statistical-ish vocabulary in human language
 
-- **Central tendency:** Across these six, total kg spans **roughly ~1.5k–4k** with this setup—useful as an **order-of-magnitude family**, not a universal law.
+- **Central tendency:** Across these six, totals span **roughly -1.6k to +1.1k kg** in this batch (with the Planet-bounded window policy). That’s a useful “family” for sanity checks, not a universal law.
 - **Outlier sensitivity:** One bad asset (wrong Planet type) can move a case from **~0** to **thousands of kg**—always check **inputs** before interpreting **outputs**.
 - **Correlation ≠ causation:** Higher kg does **not** mean “worse fire” in any moral or regulatory sense; it means **this integrated model** assigned more plume-weighted excess column **inside that GeoTIFF**.
 
@@ -268,7 +274,7 @@ Full-resolution GeoTIFFs under `results/` are often **gitignored**. Generate the
 
 ## What the numbers do *not* automatically mean
 
-- **Not a legal emissions inventory.** The mask is heuristic; the domain is often a **whole TEMPO swath**, not a tiny fire perimeter unless you clip.
+- **Not a legal emissions inventory.** The mask is heuristic; and the reported mass depends on the **chosen domain** (in this repo: TEMPO subset to Planet scene bounds, not a fire perimeter).
 - **Not “only the fire.”** Any smoke-like pixel **anywhere** in the grid contributes.
 - **Cross-fire comparisons are delicate.** Different dates, granules, and scene sizes change the story.
 
