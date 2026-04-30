@@ -38,6 +38,40 @@ MASK_NODATA_OUT = -9999.0
 AVOGADRO = 6.022_140_76e23
 M_NO2_KG_PER_MOL = 46e-3
 
+
+def _finite_column_stats(values: np.ndarray, mask: np.ndarray) -> dict[str, float | int]:
+    """Percentiles of `values` where mask is True and values are finite."""
+    x = values[mask & np.isfinite(values)]
+    if x.size == 0:
+        return {"count": 0}
+    return {
+        "count": int(x.size),
+        "min": float(np.min(x)),
+        "p50": float(np.percentile(x, 50)),
+        "p90": float(np.percentile(x, 90)),
+        "p95": float(np.percentile(x, 95)),
+        "max": float(np.max(x)),
+    }
+
+
+def delta_column_molec_cm2_to_mean_ug_m3(
+    delta_molec_cm2: np.ndarray,
+    mixing_height_m: float,
+) -> np.ndarray:
+    """
+    Layer-mean NO₂ mass concentration (µg/m³) from column enhancement (molec/cm²),
+    assuming the excess column is uniformly mixed over depth mixing_height_m.
+
+    mol/m² column = (molec/cm²) / N_A × 10⁴ ; mean mol/m³ = (mol/m²) / H.
+    """
+    if mixing_height_m <= 0:
+        raise ValueError("mixing_height_m must be positive")
+    out = np.full_like(delta_molec_cm2, np.nan, dtype=np.float64)
+    m = np.isfinite(delta_molec_cm2) & (delta_molec_cm2 >= 0)
+    mol_m2 = delta_molec_cm2[m] / AVOGADRO * 1.0e4
+    out[m] = (mol_m2 / mixing_height_m) * M_NO2_KG_PER_MOL * 1.0e9
+    return out
+
 # Used in pipeline_summary.json when --time-match is not supplied per case (Palisades pilot example).
 DEFAULT_TIME_MATCH = {
     "tempo_granule_utc": "2025-01-10T18:45:29Z → 2025-01-10T18:52:06Z",
@@ -310,6 +344,8 @@ def run(
     ndhi_bnir_smoke_above: float = -0.15,
     mask_nodata: float = MASK_NODATA_OUT,
     time_match: dict | None = None,
+    mixing_height_m: float | None = None,
+    fp_stats_min: float = 0.1,
 ) -> dict:
     if not planet_path.is_file():
         raise FileNotFoundError(f"Missing Planet raster: {planet_path}")
@@ -392,6 +428,45 @@ def run(
     elif vcd_units == "mol_m2":
         mass_signed_kg = excess_mass_mol_m2(f_p.astype(np.float64) * delta_signed, area)
 
+    # --- Plume enhancement (column + optional concentration proxy)
+    mask_fp_gt_0p01 = valid & (f_p > 0.01)
+    mask_fp_ge_core = valid & (f_p >= fp_stats_min)
+    enh_stats_block: dict[str, object] = {
+        "definition": (
+            "ΔΩ_enh = max(VCD − VCD_bg, 0); VCD_bg = median over pixels with "
+            f"f_p ≤ fp_background_max (fallbacks apply if too few pixels per pipeline)."
+        ),
+        "masks": {
+            "smoky_pixels": "valid TEMPO pixels with f_p > 0.01",
+            "core_pixels": f"valid TEMPO pixels with f_p ≥ {fp_stats_min}",
+        },
+    }
+    if vcd_units == "molec_cm2":
+        st_smoky = _finite_column_stats(delta_enh, mask_fp_gt_0p01)
+        st_core = _finite_column_stats(delta_enh, mask_fp_ge_core)
+        enh_stats_block["delta_vcd_enhancement_molec_cm2"] = {
+            "where_fp_gt_0.01": st_smoky,
+            f"where_fp_ge_{fp_stats_min}": st_core,
+        }
+        if mixing_height_m is not None and mixing_height_m > 0:
+            conc = delta_column_molec_cm2_to_mean_ug_m3(delta_enh, mixing_height_m)
+            enh_stats_block["mixing_height_m"] = float(mixing_height_m)
+            enh_stats_block["approx_mean_no2_ug_m3"] = {
+                "note": (
+                    "Layer-mean NO₂ from ΔΩ_enh ÷ H; assumes uniform mixing over H "
+                    "and that ΔΩ_enh represents vertically integrated excess — illustrative."
+                ),
+                "where_fp_gt_0.01": _finite_column_stats(conc, mask_fp_gt_0p01),
+                f"where_fp_ge_{fp_stats_min}": _finite_column_stats(conc, mask_fp_ge_core),
+            }
+    else:
+        enh_stats_block["delta_vcd_enhancement"] = {
+            "skipped_concentration": True,
+            "reason": "mol_m2 inputs — convert to molec_cm2 upstream for µg/m³ proxy, or extend formulas.",
+            "where_fp_gt_0.01": _finite_column_stats(delta_enh, mask_fp_gt_0p01),
+            f"where_fp_ge_{fp_stats_min}": _finite_column_stats(delta_enh, mask_fp_ge_core),
+        }
+
     summary = {
         "time_match": time_match if time_match is not None else DEFAULT_TIME_MATCH,
         "inputs": {"planet": str(planet_path), "tempo": str(tempo_path)},
@@ -410,12 +485,15 @@ def run(
                 "green": band_green,
             },
             "tempo_vcd_band": tempo_vcd_band,
+            "mixing_height_m": mixing_height_m,
+            "fp_stats_min": fp_stats_min,
         },
         "vcd_background_median": vcd_bg,
         "pixels_tempo": int(h * w),
         "pixels_plume_fp_gt_0.01": int(np.sum(plume_mask)),
         "total_enhancement_no2_kg": mass_kg,
         "total_excess_no2_kg_signed": float(mass_signed_kg) if mass_signed_kg is not None else None,
+        "plume_enhancement": enh_stats_block,
     }
 
     meta_path = out_dir / "pipeline_summary.json"
@@ -534,6 +612,21 @@ def main() -> None:
         action="store_true",
         help="Write Step 4 GeoTIFFs: f_p.tif, delta_vcd.tif (VCD-VCD_bg), delta_vcd_plume.tif (f_p*delta_VCD).",
     )
+    p.add_argument(
+        "--mixing-height-m",
+        type=float,
+        default=None,
+        help=(
+            "If set (e.g. 1000), add approximate layer-mean NO₂ (µg/m³) from ΔΩ_enh ÷ H "
+            "in pipeline_summary.json (molec_cm2 VCD only)."
+        ),
+    )
+    p.add_argument(
+        "--fp-stats-min",
+        type=float,
+        default=0.1,
+        help="Minimum f_p for 'core' enhancement/concentration percentiles (default 0.1).",
+    )
     args = p.parse_args()
 
     try:
@@ -553,6 +646,8 @@ def main() -> None:
             ndhi_smoke_below=args.ndhi_smoke_below,
             ndhi_bnir_smoke_above=args.ndhi_bnir_smoke_above,
             mask_nodata=args.mask_nodata,
+            mixing_height_m=args.mixing_height_m,
+            fp_stats_min=args.fp_stats_min,
         )
     except FileNotFoundError as e:
         print(str(e), file=sys.stderr)

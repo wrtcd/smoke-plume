@@ -17,12 +17,13 @@ Discovery (each case is one subdirectory of --cases-root):
 Or pass --manifest pointing at a JSON file listing cases (see cases_manifest.example.json).
 
 Run from repo root:
-  .\\.venv\\Scripts\\python.exe scripts/run_all_cases.py --cases-root smoke-plume-data --out-root results/study_batch --write-maps
+  py -3 scripts/run_all_cases.py --cases-root smoke-plume-data --out-root results/study_batch --write-maps --mixing-height-m 1000
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 import traceback
@@ -35,6 +36,34 @@ if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from smoke_plume_pipeline import run  # noqa: E402
+
+
+BATCH_SUMMARY_CSV_FIELDS = (
+    "id",
+    "status",
+    "planet",
+    "tempo",
+    "out_dir",
+    "total_enhancement_no2_kg",
+    "total_excess_no2_kg_signed",
+    "vcd_background_median",
+    "enh_delta_vcd_p95_smoky_molec_cm2",
+    "enh_delta_vcd_p95_core_molec_cm2",
+    "approx_no2_ug_m3_p95_smoky",
+    "approx_no2_ug_m3_p95_core",
+    "error",
+)
+
+
+def write_batch_summary_csv(out_root: Path, cases: list[dict[str, Any]]) -> Path:
+    """One spreadsheet-friendly row per case (batch_summary.json ``cases`` array)."""
+    path = out_root / "batch_summary.csv"
+    with path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=list(BATCH_SUMMARY_CSV_FIELDS), extrasaction="ignore")
+        w.writeheader()
+        for row in cases:
+            w.writerow({k: row.get(k, "") for k in BATCH_SUMMARY_CSV_FIELDS})
+    return path
 
 
 def _resolve_glob(case_dir: Path, pattern: str, label: str) -> Path:
@@ -177,6 +206,21 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--ndhi-smoke-below", type=float, default=0.0)
     p.add_argument("--ndhi-bnir-smoke-above", type=float, default=-0.15)
     p.add_argument("--mask-nodata", type=float, default=-9999.0)
+    p.add_argument(
+        "--mixing-height-m",
+        type=float,
+        default=None,
+        help=(
+            "Optional layer depth (m) for ΔΩ_enh → approximate mean NO₂ µg/m³ in pipeline_summary "
+            "(passed to smoke_plume_pipeline.run)."
+        ),
+    )
+    p.add_argument(
+        "--fp-stats-min",
+        type=float,
+        default=0.1,
+        help="Minimum f_p for 'core' enhancement stats (default 0.1).",
+    )
     return p
 
 
@@ -236,6 +280,8 @@ def main() -> None:
                 ndhi_bnir_smoke_above=args.ndhi_bnir_smoke_above,
                 mask_nodata=args.mask_nodata,
                 time_match=time_match,
+                mixing_height_m=args.mixing_height_m,
+                fp_stats_min=args.fp_stats_min,
             )
             row["status"] = "ok"
             row["total_enhancement_no2_kg"] = summary.get(
@@ -243,6 +289,25 @@ def main() -> None:
             )
             row["total_excess_no2_kg_signed"] = summary.get("total_excess_no2_kg_signed")
             row["vcd_background_median"] = summary.get("vcd_background_median")
+            pe = summary.get("plume_enhancement") if isinstance(summary.get("plume_enhancement"), dict) else {}
+            dvc = pe.get("delta_vcd_enhancement_molec_cm2") if isinstance(pe, dict) else None
+            ug = pe.get("approx_mean_no2_ug_m3") if isinstance(pe, dict) else None
+            if isinstance(dvc, dict):
+                core_key = f"where_fp_ge_{args.fp_stats_min}"
+                smoky = dvc.get("where_fp_gt_0.01")
+                core = dvc.get(core_key)
+                if isinstance(smoky, dict):
+                    row["enh_delta_vcd_p95_smoky_molec_cm2"] = smoky.get("p95")
+                if isinstance(core, dict):
+                    row["enh_delta_vcd_p95_core_molec_cm2"] = core.get("p95")
+            if isinstance(ug, dict):
+                core_key = f"where_fp_ge_{args.fp_stats_min}"
+                smoky_u = ug.get("where_fp_gt_0.01")
+                core_u = ug.get(core_key)
+                if isinstance(smoky_u, dict):
+                    row["approx_no2_ug_m3_p95_smoky"] = smoky_u.get("p95")
+                if isinstance(core_u, dict):
+                    row["approx_no2_ug_m3_p95_core"] = core_u.get("p95")
         except Exception as e:
             row["status"] = "error"
             row["error"] = f"{type(e).__name__}: {e}"
@@ -259,6 +324,7 @@ def main() -> None:
                 (out_root / "batch_summary.json").write_text(
                     json.dumps(index, indent=2), encoding="utf-8"
                 )
+                write_batch_summary_csv(out_root, results)
                 sys.exit(1)
         results.append(row)
 
@@ -269,7 +335,9 @@ def main() -> None:
         "cases": results,
     }
     (out_root / "batch_summary.json").write_text(json.dumps(index, indent=2), encoding="utf-8")
+    csv_path = write_batch_summary_csv(out_root, results)
     print(f"\nWrote {out_root / 'batch_summary.json'}", flush=True)
+    print(f"Wrote {csv_path}", flush=True)
 
     n_err = sum(1 for r in results if r.get("status") == "error")
     if n_err:

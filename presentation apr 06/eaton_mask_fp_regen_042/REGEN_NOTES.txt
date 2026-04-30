@@ -1,0 +1,18 @@
+Eaton mosaic + TEMPO — regenerated from source rasters (not from QGIS edits).
+
+Inputs:
+  Planet mosaic: eaton_mosaic/eaton_planet_mosaic_SR_8b.tif
+  TEMPO: smoke-plume-data/eaton/tempo/TEMPO_NO2_trop_warped_4326.tif
+
+Parameters:
+  mask_method: blue_nir
+  blue_nir_max: 0.42
+  Blue band: 2, NIR band: 8 (1-based)
+  Rule: smoke where (Blue/NIR) < 0.42; mask raster: clear=0, smoke=1, invalid=-9999
+
+Outputs:
+  smoke_mask.tif — Planet grid (EPSG:32611)
+  blue_nir_ratio.tif — Blue/NIR on Planet grid
+  f_p_tempo_grid.tif — sub-pixel smoke fraction on TEMPO grid (EPSG:4326, Planet-bounds window)
+
+Verification (automated): every mask==1 pixel has B/NIR < 0.42; no inversion.
